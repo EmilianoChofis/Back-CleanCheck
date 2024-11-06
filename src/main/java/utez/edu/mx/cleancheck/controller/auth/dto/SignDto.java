@@ -14,6 +14,5 @@ public class SignDto {
     private String email;
 
     @NotBlank(message = "La contraseña es requerida")
-    @Size(min = 8, message = "La contraseña debe contener al menos 8 caracteres")
     private String password;
 }
