@@ -2,6 +2,8 @@ package utez.edu.mx.cleancheck.model.role;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import utez.edu.mx.cleancheck.model.user.User;
@@ -12,6 +14,8 @@ import java.util.Set;
 @Table(name = "roles")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 
 public class Role {
 

@@ -50,10 +50,8 @@ public class AuthService {
 
     @Value("${receptionist.name}")
     private String receptionistName;
-
     @Value("${maid.name}")
     private String maidName;
-
     @Value("${manager.name}")
     private String managerName;
 

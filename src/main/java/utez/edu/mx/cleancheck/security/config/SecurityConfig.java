@@ -26,8 +26,7 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
 
     private final String[] whiteList = {
-            "/api-clean/auth/signIn",
-            "/api-clean/auth/createManager"
+            "/api-clean/**",
     };
 
     @Bean
