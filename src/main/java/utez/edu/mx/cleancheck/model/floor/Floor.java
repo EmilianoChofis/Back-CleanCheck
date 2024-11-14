@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import utez.edu.mx.cleancheck.model.building.Building;
 import utez.edu.mx.cleancheck.model.room.Room;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,15 +18,15 @@ public class Floor {
     @Id
     private String id;
 
-    private int number;
-
     private String name;
+
+    private int number;
 
     @ManyToOne
     @JoinColumn(name = "building_id")
     private Building buildingId;
 
     @OneToMany(mappedBy = "floorId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Room> rooms;
+    private List<Room> rooms = new ArrayList<>();
 
 }

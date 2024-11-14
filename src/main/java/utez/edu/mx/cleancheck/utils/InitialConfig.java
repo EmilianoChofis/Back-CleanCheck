@@ -44,6 +44,7 @@ public class InitialConfig implements CommandLineRunner {
             ApiResponse<Role> maidResponse = roleService.createMaid(maidRole);
             if (maidResponse.isError()) {
                 logger.warning(maidResponse.getMessage());
+                logger.warning("Role Maid ID: " + maidResponse.getData().getId());
             } else {
                 logger.info(maidResponse.getMessage());
             }
@@ -54,6 +55,7 @@ public class InitialConfig implements CommandLineRunner {
             ApiResponse<Role> managerResponse = roleService.createManager(managerRole);
             if (managerResponse.isError()) {
                 logger.warning(managerResponse.getMessage());
+                logger.warning("Role Manager ID: " + managerResponse.getData().getId());
             } else {
                 logger.info(managerResponse.getMessage());
             }

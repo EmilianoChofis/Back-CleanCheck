@@ -8,6 +8,7 @@ import utez.edu.mx.cleancheck.model.floor.Floor;
 import utez.edu.mx.cleancheck.model.record.Record;
 import utez.edu.mx.cleancheck.model.report.Report;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,11 +33,11 @@ public class Room {
 
     @OneToMany(mappedBy = "roomId", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Report> reports;
+    private List<Report> reports = new ArrayList<>();
 
     @OneToMany(mappedBy = "roomId", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Record> records;
+    private List<Record> records = new ArrayList<>();
 
 
 }

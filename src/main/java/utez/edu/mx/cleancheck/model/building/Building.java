@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import utez.edu.mx.cleancheck.model.floor.Floor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,7 +20,9 @@ public class Building {
 
     private String name;
 
+    private int number;
+
     @OneToMany(mappedBy = "buildingId", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Floor> floors;
+    private List<Floor> floors = new ArrayList<>();
 }
