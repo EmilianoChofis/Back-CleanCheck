@@ -18,6 +18,6 @@ public class Image {
     private String url;
 
     @ManyToOne
-    @JoinColumn(name = "record_id")
+    @JoinColumn(name = "report_id")
     private Report reportId;
 }

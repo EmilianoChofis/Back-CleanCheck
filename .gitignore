@@ -28,13 +28,10 @@
 *.rar
 
 ### back ###
-/ucj_test_2.log
 /.mvn
 /.idea/
 .idea/
 /HELP.md
 /mvnw
 /mvnw.cmd
-/sise-ucj.iml
 /target/
-ucj_test_2.log
