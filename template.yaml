@@ -107,38 +107,45 @@ Resources:
         Fn::Base64: !Sub |
           #!/bin/bash
           # Actualizar el sistema
-          apt update -y && apt upgrade -y
+          sudo apt update -y && sudo apt upgrade -y
 
           # Instalar dependencias necesarias
-          apt install -y docker.io git unzip jq
+          sudo apt install -y docker.io git unzip jq
 
           # Iniciar Docker y agregar usuario ubuntu al grupo docker
-          systemctl start docker
-          systemctl enable docker
-          usermod -aG docker ubuntu
+          sudo systemctl start docker
+          sudo systemctl enable docker
+          sudo usermod -aG docker ubuntu
+
+          # Ajustar permisos para usar Docker sin reiniciar sesión
+          newgrp docker || true
 
           # Instalar AWS CLI
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          ./aws/install
+          sudo unzip awscliv2.zip
+          sudo chmod +x ./aws/install
+          sudo ./aws/install
 
           # Clonar el repositorio del backend
-          git clone https://github.com/EmilianoChofis/Back-CleanCheck.git /home/ubuntu/backend
+          sudo git clone https://github.com/EmilianoChofis/Back-CleanCheck.git /home/ubuntu/backend
 
           # Copiar docker-compose.yml al directorio del backend
-          cp /home/ubuntu/docker-compose.yml /home/ubuntu/backend
+          sudo cp /home/ubuntu/docker-compose.yml /home/ubuntu/backend
+
+          # Ajustar permisos del directorio
+          sudo chown -R ubuntu:ubuntu /home/ubuntu
+          sudo chmod -R 755 /home/ubuntu
 
           # Obtener credenciales de DB de Secrets Manager
-          DB_SECRET=$(aws secretsmanager get-secret-value --secret-id ${DBSecret} --query SecretString --output text)
+          DB_SECRET=$(sudo aws secretsmanager get-secret-value --secret-id ${DBSecret} --query SecretString --output text)
           DB_USERNAME=$(echo $DB_SECRET | jq -r .username)
           DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
 
           # Establecer variables de entorno
-          echo "export DB_HOST=${RDSInstance.Endpoint.Address}" >> /etc/environment
-          echo "export DB_USERNAME=$DB_USERNAME" >> /etc/environment
-          echo "export DB_PASSWORD=$DB_PASSWORD" >> /etc/environment
-          echo "export DB_NAME=${DBName}" >> /etc/environment
-          
+          echo "export DB_HOST=${RDSInstance.Endpoint.Address}" | sudo tee -a /etc/environment
+          echo "export DB_USERNAME=$DB_USERNAME" | sudo tee -a /etc/environment
+          echo "export DB_PASSWORD=$DB_PASSWORD" | sudo tee -a /etc/environment
+          echo "export DB_NAME=${DBName}" | sudo tee -a /etc/environment
 Outputs:
   EC2PublicIP:
     Description: Public IP of EC2 Instance
