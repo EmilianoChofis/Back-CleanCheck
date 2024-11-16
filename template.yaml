@@ -1,0 +1,246 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'Template for RDS PostgreSQL, EC2, S3, and Secrets Manager setup'
+
+Parameters:
+  VpcCIDR:
+    Type: String
+    Default: 10.0.0.0/16
+  DBName:
+    Type: String
+    Default: cleancheck
+  EC2InstanceType:
+    Type: String
+    Default: t2.small
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of an existing EC2 KeyPair
+
+Resources:
+  # VPC and Network Configuration
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: MyVPC
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      MapPublicIpOnLaunch: true
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable
+
+  # Secrets Manager for RDS
+  DBSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub ${AWS::StackName}-db-credentials
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "dbadmin"}'
+        GenerateStringKey: "password"
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\'
+
+  # RDS Security Group
+  RDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: RDS Security Group
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref EC2SecurityGroup
+
+  # RDS Instance
+  RDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: !Ref DBName
+      Engine: postgres
+      MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref DBSecret, ':SecretString:username}}' ]]
+      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref DBSecret, ':SecretString:password}}' ]]
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: '20'
+      VPCSecurityGroups:
+        - !Ref RDSSecurityGroup
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      PubliclyAccessible: false
+
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for RDS
+      SubnetIds:
+        - !Ref PrivateSubnet1
+
+  # S3 Bucket
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # EC2 Instance Role and Profile
+  EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                Resource:
+                  - !GetAtt S3Bucket.Arn
+                  - !Sub ${S3Bucket.Arn}/*
+        - PolicyName: SecretsAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref DBSecret
+
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref EC2Role
+
+  # EC2 Security Group
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: EC2 Security Group
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  # EC2 Instance
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref EC2InstanceType
+      ImageId: ami-0aa7d40eeae50c9a9  # Amazon Linux 2023 AMI (update for your region)
+      KeyName: !Ref KeyPairName
+      SubnetId: !Ref PublicSubnet1
+      SecurityGroupIds:
+        - !Ref EC2SecurityGroup
+      IamInstanceProfile: !Ref EC2InstanceProfile
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # Actualizar el sistema
+          yum update -y
+          
+          # Instalar dependencias necesarias
+          yum install -y docker git unzip
+          
+          # Iniciar Docker y agregar ec2-user al grupo docker
+          service docker start
+          usermod -aG docker ec2-user
+          
+          # Instalar AWS CLI
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          ./aws/install
+          
+          # Clonar el repositorio del backend
+          git clone https://github.com/EmilianoChofis/Back-CleanCheck.git /home/ec2-user/backend
+          
+          #copiar docker-compose.yml al mismo nivel que Back-CleanCheck
+          cp /home/ec2-user/docker-compose.yml /home/ec2-user/backend
+          # Navegar al directorio del backend
+          #cd /home/ec2-user/backend
+          
+          # Construir y ejecutar la aplicación con Docker Compose
+          #docker compose up -d
+          
+          
+          # Get DB credentials from Secrets Manager
+          DB_SECRET=$(aws secretsmanager get-secret-value --secret-id ${DBSecret} --query SecretString --output text)
+          DB_USERNAME=$(echo $DB_SECRET | jq -r .username)
+          DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
+          
+          # Set environment variables
+          echo "export DB_HOST=${RDSInstance.Endpoint.Address}" >> /etc/environment
+          echo "export DB_USERNAME=$DB_USERNAME" >> /etc/environment
+          echo "export DB_PASSWORD=$DB_PASSWORD" >> /etc/environment
+          echo "export DB_NAME=${DBName}" >> /etc/environment
+          echo "export S3_BUCKET=${S3Bucket}" >> /etc/environment
+
+Outputs:
+  EC2PublicIP:
+    Description: Public IP of EC2 Instance
+    Value: !GetAtt EC2Instance.PublicIp
+  RDSEndpoint:
+    Description: RDS Connection Endpoint
+    Value: !GetAtt RDSInstance.Endpoint.Address
+  S3BucketName:
+    Description: Name of S3 Bucket
+    Value: !Ref S3Bucket
