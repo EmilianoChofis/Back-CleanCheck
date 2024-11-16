@@ -31,6 +31,7 @@
 /.mvn
 /.idea/
 .idea/
+.aws-sam/
 /HELP.md
 /mvnw
 /mvnw.cmd
