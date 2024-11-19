@@ -24,7 +24,7 @@ public class Floor {
 
     @ManyToOne
     @JoinColumn(name = "building_id")
-    private Building buildingId;
+    private Building building;
 
     @OneToMany(mappedBy = "floorId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Room> rooms = new ArrayList<>();

@@ -22,7 +22,7 @@ public class Building {
 
     private int number;
 
-    @OneToMany(mappedBy = "buildingId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Floor> floors = new ArrayList<>();
 }

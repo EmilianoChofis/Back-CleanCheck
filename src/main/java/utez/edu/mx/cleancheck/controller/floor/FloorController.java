@@ -6,27 +6,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.cleancheck.controller.floor.dto.FloorDto;
 import utez.edu.mx.cleancheck.model.floor.Floor;
 import utez.edu.mx.cleancheck.service.floor.FloorService;
 import utez.edu.mx.cleancheck.utils.ApiResponse;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/api-clean/floor")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
-
 public class FloorController {
 
     private final FloorService service;
 
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<Floor>> create (@Valid @RequestBody FloorDto floor) {
+    public ResponseEntity<ApiResponse<Floor>> create (@Validated({FloorDto.Create.class}) @RequestBody FloorDto floor) {
         try {
             ApiResponse<Floor> response = service.create(floor);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
@@ -44,10 +43,29 @@ public class FloorController {
     }
 
     @Transactional(readOnly = true)
-    @PostMapping("/findById")
-    public ResponseEntity<ApiResponse<Floor>> findById (@Valid @RequestBody String id) {
+    @GetMapping("/getAll")
+    public ResponseEntity<ApiResponse<List<Floor>>> getAll() {
         try {
-            ApiResponse<Floor> response = service.findById(id);
+            ApiResponse<List<Floor>> response = service.findAll();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @PostMapping("/findById")
+    public ResponseEntity<ApiResponse<Floor>> findById (@Validated({FloorDto.FindById.class}) @RequestBody FloorDto dto) {
+        try {
+            ApiResponse<Floor> response = service.findById(dto);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
             return new ResponseEntity<>(
                     response,
@@ -101,8 +119,8 @@ public class FloorController {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    @PostMapping("/update")
-    public ResponseEntity<ApiResponse<Floor>> update (@Valid @RequestBody FloorDto floor) {
+    @PutMapping("/update")
+    public ResponseEntity<ApiResponse<Floor>> update (@Validated({FloorDto.Update.class}) @RequestBody FloorDto floor) {
         try {
             ApiResponse<Floor> response = service.update(floor);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
