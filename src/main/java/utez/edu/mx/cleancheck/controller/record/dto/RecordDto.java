@@ -12,7 +12,7 @@ public class RecordDto {
         private RoomState previousState;
 
         @NotNull(groups = {RecordDto.Insert.class})
-        private RoomState NewState;
+        private RoomState newState;
 
         @NotNull(groups = {RecordDto.Insert.class})
         private User userId;

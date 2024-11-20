@@ -21,23 +21,23 @@ public class RecordService {
     private final UserRepository userRepository;
     //create
     @Transactional(rollbackFor = Exception.class)
-    public ApiResponse<Record> insert(RecordDto record) {
-        if(!roomRepository.existsById(record.getRoomId().getId())){
-            return new ApiResponse<Record>(
+    public ApiResponse<Record> insert(RecordDto recordDto) {
+        if(!roomRepository.existsById(recordDto.getRoomId().getId())){
+            return new ApiResponse<>(
                     null, true, 400, "La habitacion ingresada no esta registrada"
             );
         }
-        if(!userRepository.existsById(record.getUserId().getId())){
-            return new ApiResponse<Record>(
+        if(!userRepository.existsById(recordDto.getUserId().getId())){
+            return new ApiResponse<>(
                     null, true, 400, "El usuario ingresado no esta registrado"
             );
         }
         Record newRecord = new Record();
-        newRecord.setPreviousState(record.getPreviousState());
-        newRecord.setNewState(record.getNewState());
-        newRecord.setRoomId(roomRepository.findById(record.getRoomId().getId()).get());
-        newRecord.setUserId(userRepository.findById(record.getUserId().getId()).get());
-        return new ApiResponse<Record>(
+        newRecord.setPreviousState(recordDto.getPreviousState());
+        newRecord.setNewState(recordDto.getNewState());
+        newRecord.setRoomId(recordDto.getRoomId());
+        newRecord.setUserId(recordDto.getUserId());
+        return new ApiResponse<>(
                 recordRepository.save(newRecord), false, 200, "Registro creado correctamente"
         );
     }
