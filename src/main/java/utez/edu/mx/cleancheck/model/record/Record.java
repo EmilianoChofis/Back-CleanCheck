@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import utez.edu.mx.cleancheck.model.room.Room;
+import utez.edu.mx.cleancheck.model.room.RoomState;
 import utez.edu.mx.cleancheck.model.user.User;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,12 @@ public class Record {
     @CreatedDate
     @Column(name = "created_at", insertable = false, columnDefinition = "TIMESTAMP DEFAULT NOW()")
     private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    private RoomState previousState;
+
+    @Enumerated(EnumType.STRING)
+    private RoomState newState;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

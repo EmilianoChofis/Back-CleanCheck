@@ -1,9 +1,9 @@
 package utez.edu.mx.cleancheck.model.room;
 
 public enum RoomState {
+    OCCUPIED,
+    UNOCCUPIED,
     CLEAN,
-    DIRTY,
-    ENABLE,
-    DISABLE,
+    CHECKED,
     IN_MAINTENANCE
 }
