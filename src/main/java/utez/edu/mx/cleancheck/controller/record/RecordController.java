@@ -12,6 +12,7 @@ import utez.edu.mx.cleancheck.controller.record.dto.RecordDto;
 import utez.edu.mx.cleancheck.service.record.RecordService;
 import utez.edu.mx.cleancheck.utils.ApiResponse;
 import utez.edu.mx.cleancheck.model.record.Record;
+import utez.edu.mx.cleancheck.utils.PaginationDto;
 
 import java.util.List;
 
@@ -41,11 +42,10 @@ public class RecordController {
     }
 
     //get by room
-    //@Josafat este conviertelo en paginado
     @PostMapping("/get-by-room")
-    public ResponseEntity<ApiResponse<List<Record>>> getByRoom(@Validated({RecordDto.GetByRoom.class}) @RequestBody RecordDto recordDto) {
+    public ResponseEntity<ApiResponse<List<Record>>> getByRoom(@Validated({PaginationDto.StateGet.class}) @RequestBody PaginationDto paginationDto) {
         try {
-            ApiResponse<List<Record>> response = recordService.findByRoom(recordDto.getRoomId());
+            ApiResponse<List<Record>> response = recordService.findByRoom(paginationDto);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
             return new ResponseEntity<>(
                     response,

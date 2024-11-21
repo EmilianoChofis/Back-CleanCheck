@@ -29,13 +29,13 @@ public class Room {
 
     @ManyToOne
     @JoinColumn(name = "floor_id")
-    private Floor floorId;
+    private Floor floor;
 
     @OneToMany(mappedBy = "roomId", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Report> reports = new ArrayList<>();
 
-    @OneToMany(mappedBy = "roomId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Record> records = new ArrayList<>();
 

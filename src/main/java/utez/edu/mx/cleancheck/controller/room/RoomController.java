@@ -1,10 +1,10 @@
 package utez.edu.mx.cleancheck.controller.room;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.cleancheck.controller.room.dto.RoomDto;
 import utez.edu.mx.cleancheck.model.room.Room;
@@ -23,7 +23,7 @@ public class RoomController {
     private final RoomService service;
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<Room>> create (@Valid @RequestBody RoomDto room) {
+    public ResponseEntity<ApiResponse<Room>> create(@Validated({RoomDto.Create.class}) @RequestBody RoomDto room) {
         try {
             ApiResponse<Room> response = service.create(room);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
@@ -41,7 +41,7 @@ public class RoomController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<ApiResponse<List<Room>>> getAll () {
+    public ResponseEntity<ApiResponse<List<Room>>> getAll() {
         try {
             ApiResponse<List<Room>> response = service.findAll();
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
@@ -59,7 +59,7 @@ public class RoomController {
     }
 
     @GetMapping("/getById/{id}")
-    public ResponseEntity<ApiResponse<Room>> getById (@PathVariable String id) {
+    public ResponseEntity<ApiResponse<Room>> getById(@PathVariable String id) {
         try {
             ApiResponse<Room> response = service.findById(id);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
@@ -77,7 +77,7 @@ public class RoomController {
     }
 
     @GetMapping("/getByName/{name}")
-    public ResponseEntity<ApiResponse<Room>> getByName (@PathVariable String name) {
+    public ResponseEntity<ApiResponse<Room>> getByName(@PathVariable String name) {
         try {
             ApiResponse<Room> response = service.findByName(name);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
@@ -95,7 +95,7 @@ public class RoomController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ApiResponse<Room>> update (@Valid @RequestBody RoomDto room) {
+    public ResponseEntity<ApiResponse<Room>> update(@Validated({RoomDto.Update.class}) @RequestBody RoomDto room) {
         try {
             ApiResponse<Room> response = service.update(room);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
@@ -113,7 +113,7 @@ public class RoomController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ApiResponse<Room>> delete (@Valid @RequestBody RoomDto room) {
+    public ResponseEntity<ApiResponse<Room>> delete(@Validated({RoomDto.Delete.class}) @RequestBody RoomDto room) {
         try {
             ApiResponse<Room> response = service.delete(room);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;

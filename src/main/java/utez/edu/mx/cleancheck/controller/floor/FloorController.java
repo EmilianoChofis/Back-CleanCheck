@@ -25,7 +25,7 @@ public class FloorController {
 
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<Floor>> create (@Validated({FloorDto.Create.class}) @RequestBody FloorDto floor) {
+    public ResponseEntity<ApiResponse<Floor>> create(@Validated({FloorDto.Create.class}) @RequestBody FloorDto floor) {
         try {
             ApiResponse<Floor> response = service.create(floor);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
@@ -63,7 +63,7 @@ public class FloorController {
 
     @Transactional(readOnly = true)
     @PostMapping("/findById")
-    public ResponseEntity<ApiResponse<Floor>> findById (@Validated({FloorDto.FindById.class}) @RequestBody FloorDto dto) {
+    public ResponseEntity<ApiResponse<Floor>> findById(@Validated({FloorDto.FindById.class}) @RequestBody FloorDto dto) {
         try {
             ApiResponse<Floor> response = service.findById(dto);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
@@ -82,7 +82,7 @@ public class FloorController {
 
     @Transactional(readOnly = true)
     @PostMapping("/findByName")
-    public ResponseEntity<ApiResponse<Floor>> findByName (@Valid @RequestBody String name) {
+    public ResponseEntity<ApiResponse<Floor>> findByName(@Valid @RequestBody String name) {
         try {
             ApiResponse<Floor> response = service.findByName(name);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
@@ -101,7 +101,7 @@ public class FloorController {
 
     @Transactional(readOnly = true)
     @PostMapping("/findByNumber")
-    public ResponseEntity<ApiResponse<Floor>> findByNumber (@Valid @RequestBody int number) {
+    public ResponseEntity<ApiResponse<Floor>> findByNumber(@Valid @RequestBody int number) {
         try {
             ApiResponse<Floor> response = service.findByNumber(number);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
@@ -120,7 +120,7 @@ public class FloorController {
 
     @Transactional(rollbackFor = Exception.class)
     @PutMapping("/update")
-    public ResponseEntity<ApiResponse<Floor>> update (@Validated({FloorDto.Update.class}) @RequestBody FloorDto floor) {
+    public ResponseEntity<ApiResponse<Floor>> update(@Validated({FloorDto.Update.class}) @RequestBody FloorDto floor) {
         try {
             ApiResponse<Floor> response = service.update(floor);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
@@ -139,7 +139,7 @@ public class FloorController {
 
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/delete")
-    public ResponseEntity<ApiResponse<Floor>> delete (@Valid @RequestBody FloorDto floor) {
+    public ResponseEntity<ApiResponse<Floor>> delete(@Valid @RequestBody FloorDto floor) {
         try {
             ApiResponse<Floor> response = service.delete(floor);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;

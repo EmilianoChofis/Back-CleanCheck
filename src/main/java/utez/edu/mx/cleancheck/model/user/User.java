@@ -41,7 +41,7 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Record> records;
 

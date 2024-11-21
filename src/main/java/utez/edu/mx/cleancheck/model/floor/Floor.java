@@ -1,5 +1,6 @@
 package utez.edu.mx.cleancheck.model.floor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,8 @@ public class Floor {
     @JoinColumn(name = "building_id")
     private Building building;
 
-    @OneToMany(mappedBy = "floorId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Room> rooms = new ArrayList<>();
 
 }

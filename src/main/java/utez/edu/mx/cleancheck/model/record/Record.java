@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Table(name = "records")
 @Data
 @NoArgsConstructor
-
 public class Record {
 
     @Id
@@ -32,9 +31,9 @@ public class Record {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
-    private Room roomId;
+    private Room room;
 }

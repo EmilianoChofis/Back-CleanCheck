@@ -15,10 +15,10 @@ public class RecordDto {
         private RoomState newState;
 
         @NotNull(groups = {RecordDto.Insert.class})
-        private User userId;
+        private User user;
 
         @NotNull(groups = {RecordDto.Insert.class, RecordDto.GetByRoom.class})
-        private Room roomId;
+        private Room room;
 
         public interface Insert {
         }
