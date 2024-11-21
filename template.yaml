@@ -23,6 +23,18 @@ Resources:
         GenerateStringKey: "password"
         PasswordLength: 16
         ExcludeCharacters: '"@/\'
+  
+  # Secrets Manager for JWT Secret
+  JWTSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub ${AWS::StackName}-jwt-secret
+      GenerateSecretString:
+        SecretStringTemplate: '{"jwt_secret_name": "myjwtsecret"}'
+        GenerateStringKey: "jwt_secret"
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\'
+
 
   # RDS Security Group
   RDSSecurityGroup:
@@ -47,7 +59,7 @@ Resources:
       AllocatedStorage: '5'
       VPCSecurityGroups:
         - !GetAtt RDSSecurityGroup.GroupId
-      PubliclyAccessible: false
+      PubliclyAccessible: true
 
   # EC2 Instance Role and Profile
   EC2Role:
@@ -63,7 +75,7 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
       Policies:
-        - PolicyName: SecretsAccess
+        - PolicyName: RDSSecretsAccess
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -71,6 +83,14 @@ Resources:
                 Action:
                   - secretsmanager:GetSecretValue
                 Resource: !Ref DBSecret
+        - PolicyName: JWTSecretsAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref JWTSecret
 
   EC2InstanceProfile:
     Type: AWS::IAM::InstanceProfile
@@ -89,8 +109,8 @@ Resources:
           ToPort: 22
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
+          FromPort: 8080
+          ToPort: 8080
           CidrIp: 0.0.0.0/0
 
   # EC2 Instance
@@ -103,15 +123,24 @@ Resources:
       SecurityGroupIds:
         - !Ref EC2SecurityGroup
       IamInstanceProfile: !Ref EC2InstanceProfile
+      Environment:
+        - Name: JWT_SECRET
+          Value: !GetAtt GenerateJWTSecret.JWTSecret
+        - Name: DB_SECRET
+          Value: !GetAtt GenerateDBSecret.DBSecret
+        - Name: DB_NAME
+          Value: !Ref DBName
+        - Name: RDS_ENDPOINT
+          Value: !GetAtt RDSInstance.Endpoint.Address
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
           # Actualizar el sistema
           sudo apt update -y && sudo apt upgrade -y
-
+          sleep 30
           # Instalar dependencias necesarias
           sudo apt install -y docker.io git unzip jq
-
+          sleep 30
           # Iniciar Docker y agregar usuario ubuntu al grupo docker
           sudo systemctl start docker
           sudo systemctl enable docker
@@ -138,14 +167,18 @@ Resources:
 
           # Obtener credenciales de DB de Secrets Manager
           DB_SECRET=$(sudo aws secretsmanager get-secret-value --secret-id ${DBSecret} --query SecretString --output text)
+          JWTSecret=$(sudo aws secretsmanager get-secret-value --secret-id ${JWTSecret} --query SecretString --output text)
           DB_USERNAME=$(echo $DB_SECRET | jq -r .username)
           DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
+          SERVER_PORT=$(echo $SERVER_SECRET | jq -r .port)
+          JWT_SECRET=$(echo $JWT_SECRET | jq -r .jwt_secret)
 
           # Establecer variables de entorno
           echo "export DB_HOST=${RDSInstance.Endpoint.Address}" | sudo tee -a /etc/environment
           echo "export DB_USERNAME=$DB_USERNAME" | sudo tee -a /etc/environment
           echo "export DB_PASSWORD=$DB_PASSWORD" | sudo tee -a /etc/environment
           echo "export DB_NAME=${DBName}" | sudo tee -a /etc/environment
+          echo "export JWT_SECRET=${JWT_SECRET}" | sudo tee -a /etc/environment
 Outputs:
   EC2PublicIP:
     Description: Public IP of EC2 Instance
