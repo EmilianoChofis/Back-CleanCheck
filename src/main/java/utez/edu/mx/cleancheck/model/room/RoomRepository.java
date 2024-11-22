@@ -10,7 +10,8 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 
     Optional<Room> findByName (String name);
     Optional<Room> findByIdentifier (String identifier);
-    Optional<List<Room>> findByFloorId (Floor floorId);
+    List<Room> findByFloorId (String floorId);
 
 
+    List<Room> findByStatus(RoomState status);
 }

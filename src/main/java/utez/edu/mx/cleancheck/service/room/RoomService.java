@@ -64,6 +64,22 @@ public class RoomService {
     }
 
     @Transactional(readOnly = true)
+    public ApiResponse<List<Room>> findByFloor(RoomDto dto) {
+        List<Room> rooms = roomRepository.findByFloorId(dto.getFloorId());
+        return new ApiResponse<>(
+                rooms, false, 200, "Habitaciones encontradas"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Room>> findByStatus(RoomDto dto) {
+        List<Room> rooms = roomRepository.findByStatus(dto.getStatus());
+        return new ApiResponse<>(
+                rooms, false, 200, "Habitaciones encontradas"
+        );
+    }
+
+    @Transactional(readOnly = true)
     public ApiResponse<Room> findById(String id) {
         Room foundRoom = roomRepository.findById(id).orElse(null);
         if (foundRoom == null) {
