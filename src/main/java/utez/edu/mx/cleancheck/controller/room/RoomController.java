@@ -129,4 +129,22 @@ public class RoomController {
             );
         }
     }
+
+    @PutMapping("/change-status")
+    public ResponseEntity<ApiResponse<Room>> changeStatus(@Validated({RoomDto.ChangeStatus.class}) @RequestBody RoomDto room) {
+        try {
+            ApiResponse<Room> response = service.changeState(room);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }

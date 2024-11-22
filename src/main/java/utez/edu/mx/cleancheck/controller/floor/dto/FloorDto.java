@@ -12,9 +12,6 @@ public class FloorDto {
     @NotNull(groups = {Create.class, Update.class}, message = "El nombre del piso es requerido")
     private String name;
 
-    @NotNull(groups = {Create.class, Update.class}, message = "El número del piso es requerido")
-    private int number;
-
     @NotNull(groups = {Create.class, Update.class}, message = "El id del edificio es requerido")
     private String buildingId;
 

@@ -23,7 +23,7 @@ public class FloorService {
     private final BuildingRepository buildingRepository;
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<Floor> create (FloorDto floor) {
+    public ApiResponse<Floor> create(FloorDto floor) {
 
         Building foundBuilding = buildingRepository.findById(floor.getBuildingId()).orElse(null);
         if (foundBuilding == null) {
@@ -36,7 +36,6 @@ public class FloorService {
         String id = UUID.randomUUID().toString();
         newFloor.setId(id);
         newFloor.setName(floor.getName());
-        newFloor.setNumber(floor.getNumber());
         newFloor.setBuilding(foundBuilding);
         Floor saveFloor = floorRepository.save(newFloor);
         return new ApiResponse<>(
@@ -45,7 +44,7 @@ public class FloorService {
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<List<Floor>> findAll () {
+    public ApiResponse<List<Floor>> findAll() {
         List<Floor> floors = floorRepository.findAll();
         if (floors.isEmpty()) {
             return new ApiResponse<>(
@@ -58,7 +57,7 @@ public class FloorService {
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<Floor> findById (FloorDto dto) {
+    public ApiResponse<Floor> findById(FloorDto dto) {
         Floor foundFloor = floorRepository.findById(dto.getId()).orElse(null);
         if (foundFloor == null) {
             return new ApiResponse<>(
@@ -72,21 +71,8 @@ public class FloorService {
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<Floor> findByName (String name) {
+    public ApiResponse<Floor> findByName(String name) {
         Floor foundFloor = floorRepository.findByName(name).orElse(null);
-        if (foundFloor == null) {
-            return new ApiResponse<>(
-                    foundFloor, true, 400, "El piso ingresado no esta registrado"
-            );
-        }
-        return new ApiResponse<>(
-                foundFloor, false, 200, "Piso encontrado"
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public ApiResponse<Floor> findByNumber (int number) {
-        Floor foundFloor = floorRepository.findByNumber(number).orElse(null);
         if (foundFloor == null) {
             return new ApiResponse<>(
                     foundFloor, true, 400, "El piso ingresado no esta registrado"
@@ -115,7 +101,6 @@ public class FloorService {
         }
 
         foundFloor.setName(floor.getName());
-        foundFloor.setNumber(floor.getNumber());
         foundFloor.setBuilding(foundBuilding);
         Floor saveFloor = floorRepository.save(foundFloor);
         return new ApiResponse<>(
@@ -124,7 +109,7 @@ public class FloorService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<Floor> delete (FloorDto floor) {
+    public ApiResponse<Floor> delete(FloorDto floor) {
         Floor foundFloor = floorRepository.findByName(floor.getName()).orElse(null);
         if (foundFloor == null) {
             return new ApiResponse<>(
