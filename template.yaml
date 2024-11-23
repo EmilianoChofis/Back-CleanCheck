@@ -23,7 +23,7 @@ Resources:
         GenerateStringKey: "password"
         PasswordLength: 16
         ExcludeCharacters: '"@/\'
-  
+
   # Secrets Manager for JWT Secret
   JWTSecret:
     Type: AWS::SecretsManager::Secret
@@ -61,6 +61,13 @@ Resources:
         - !GetAtt RDSSecurityGroup.GroupId
       PubliclyAccessible: true
 
+  # S3 Bucket
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join ['', ['cleancheck-', !Ref DBName, '-', !Ref "AWS::AccountId"] ]
+
+
   # EC2 Instance Role and Profile
   EC2Role:
     Type: AWS::IAM::Role
@@ -75,6 +82,18 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
       Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                Resource:
+                  - !GetAtt S3Bucket.Arn
+                  - !Sub ${S3Bucket.Arn}/*
         - PolicyName: RDSSecretsAccess
           PolicyDocument:
             Version: '2012-10-17'
@@ -123,62 +142,36 @@ Resources:
       SecurityGroupIds:
         - !Ref EC2SecurityGroup
       IamInstanceProfile: !Ref EC2InstanceProfile
-      Environment:
-        - Name: JWT_SECRET
-          Value: !GetAtt GenerateJWTSecret.JWTSecret
-        - Name: DB_SECRET
-          Value: !GetAtt GenerateDBSecret.DBSecret
-        - Name: DB_NAME
-          Value: !Ref DBName
-        - Name: RDS_ENDPOINT
-          Value: !GetAtt RDSInstance.Endpoint.Address
       UserData:
         Fn::Base64: !Sub |
-          #!/bin/bash
-          # Actualizar el sistema
-          sudo apt update -y && sudo apt upgrade -y
-          sleep 30
-          # Instalar dependencias necesarias
-          sudo apt install -y docker.io git unzip jq
-          sleep 30
-          # Iniciar Docker y agregar usuario ubuntu al grupo docker
-          sudo systemctl start docker
-          sudo systemctl enable docker
-          sudo usermod -aG docker ubuntu
-
-          # Ajustar permisos para usar Docker sin reiniciar sesión
-          newgrp docker || true
-
-          # Instalar AWS CLI
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          sudo unzip awscliv2.zip
-          sudo chmod +x ./aws/install
-          sudo ./aws/install
-
-          # Clonar el repositorio del backend
-          sudo git clone https://github.com/EmilianoChofis/Back-CleanCheck.git /home/ubuntu/backend
-
-          # Copiar docker-compose.yml al directorio del backend
-          sudo cp /home/ubuntu/docker-compose.yml /home/ubuntu/backend
-
-          # Ajustar permisos del directorio
-          sudo chown -R ubuntu:ubuntu /home/ubuntu
-          sudo chmod -R 755 /home/ubuntu
-
-          # Obtener credenciales de DB de Secrets Manager
-          DB_SECRET=$(sudo aws secretsmanager get-secret-value --secret-id ${DBSecret} --query SecretString --output text)
-          JWTSecret=$(sudo aws secretsmanager get-secret-value --secret-id ${JWTSecret} --query SecretString --output text)
-          DB_USERNAME=$(echo $DB_SECRET | jq -r .username)
-          DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
-          SERVER_PORT=$(echo $SERVER_SECRET | jq -r .port)
-          JWT_SECRET=$(echo $JWT_SECRET | jq -r .jwt_secret)
-
-          # Establecer variables de entorno
+          #cloud-boothook
+          #!/bin/bash 
+          
+          #Clone the repository
+          git clone https://github.com/EmilianoChofis/Back-CleanCheck.git /home/ubuntu/Back-CleanCheck
+          
+          #Checkout to the deploy branch
+          git checkout deploy
+          
+          #copy the setup.sh to the home directory
+          cp /home/ubuntu/Back-CleanCheck/setup.sh /home/ubuntu/
+          
+          #copy the docker-compose.yml to the home directory
+          cp /home/ubuntu/Back-CleanCheck/docker-compose.yml /home/ubuntu/
+          
+          # Establish environment variables
           echo "export DB_HOST=${RDSInstance.Endpoint.Address}" | sudo tee -a /etc/environment
-          echo "export DB_USERNAME=$DB_USERNAME" | sudo tee -a /etc/environment
-          echo "export DB_PASSWORD=$DB_PASSWORD" | sudo tee -a /etc/environment
           echo "export DB_NAME=${DBName}" | sudo tee -a /etc/environment
-          echo "export JWT_SECRET=${JWT_SECRET}" | sudo tee -a /etc/environment
+          echo "export DBSecret=${DBSecret}" | sudo tee -a /etc/environment
+          
+          #Adding sleep 
+          sleep 10
+          
+          # Setting up the permission for the setup.sh file
+          chmod +x /home/ubuntu/setup.sh
+          
+          # Running the setup.sh file
+          /home/ubuntu/setup.sh
 Outputs:
   EC2PublicIP:
     Description: Public IP of EC2 Instance
@@ -186,3 +179,6 @@ Outputs:
   RDSEndpoint:
     Description: RDS Connection Endpoint
     Value: !GetAtt RDSInstance.Endpoint.Address
+  S3BucketName:
+    Description: Name of S3 Bucket
+    Value: !Ref S3Bucket
