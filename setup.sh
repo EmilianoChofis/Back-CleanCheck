@@ -2,6 +2,9 @@
 #update dependencies
 sudo apt-get update
 
+#Configure
+sudo dpkg --configure -a
+
 #install docker
 sudo apt-get install docker.io -y
 
@@ -14,9 +17,11 @@ sudo apt-get install awscli -y
 #Sleep
 sleep 10
 
+
+
 #Getting thew rest of the variables from aws cli
 # shellcheck disable=SC2154
-DB_SECRET=$(sudo aws secretsmanager get-secret-value --secret-id "${DBSecret}" --query SecretString --output text)
+DB_SECRET=$(sudo aws secretsmanager get-secret-value --secret-id "${DBSecret}" --query SecretString --output text --region "us-east-1")
 DB_USERNAME=$(echo "$DB_SECRET" | jq -r .username)
 DB_PASSWORD=$(echo "$DB_SECRET" | jq -r .password)
 
