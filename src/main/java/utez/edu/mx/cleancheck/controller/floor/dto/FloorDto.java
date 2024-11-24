@@ -12,7 +12,7 @@ public class FloorDto {
     @NotNull(groups = {Create.class, Update.class}, message = "El nombre del piso es requerido")
     private String name;
 
-    @NotNull(groups = {Create.class, Update.class}, message = "El id del edificio es requerido")
+    @NotNull(groups = {Create.class, Update.class, FindByBuildingId.class}, message = "El id del edificio es requerido")
     private String buildingId;
 
     public interface Create {
@@ -22,6 +22,9 @@ public class FloorDto {
     }
 
     public interface FindById{
+    }
+
+    public interface FindByBuildingId{
     }
 
 }

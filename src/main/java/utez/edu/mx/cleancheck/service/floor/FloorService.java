@@ -12,6 +12,7 @@ import utez.edu.mx.cleancheck.utils.ApiResponse;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -119,6 +120,23 @@ public class FloorService {
         floorRepository.delete(foundFloor);
         return new ApiResponse<>(
                 foundFloor, false, 200, "Piso eliminado correctamente"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Floor>> findByBuildingId(FloorDto dto) {
+
+        Optional<Building> foundBuilding = buildingRepository.findById(dto.getBuildingId());
+        if (foundBuilding.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "El edificio ingresado no esta registrado"
+            );
+        }
+
+        List<Floor> floors = floorRepository.findByBuildingId(dto.getBuildingId());
+
+        return new ApiResponse<>(
+                floors, false, 200, "Pisos encontrados"
         );
     }
 }
