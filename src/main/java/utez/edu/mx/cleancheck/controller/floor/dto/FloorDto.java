@@ -2,6 +2,9 @@ package utez.edu.mx.cleancheck.controller.floor.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import utez.edu.mx.cleancheck.model.floor.Floor;
+
+import java.util.List;
 
 @Data
 public class FloorDto {
@@ -15,6 +18,9 @@ public class FloorDto {
     @NotNull(groups = {Create.class, Update.class, FindByBuildingId.class}, message = "El id del edificio es requerido")
     private String buildingId;
 
+    @NotNull(groups = {CreateList.class}, message = "La lista de pisos es requerida")
+    List<Floor> floors;
+
     public interface Create {
     }
 
@@ -25,6 +31,9 @@ public class FloorDto {
     }
 
     public interface FindByBuildingId{
+    }
+
+    public interface CreateList {
     }
 
 }

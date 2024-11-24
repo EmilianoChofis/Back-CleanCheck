@@ -11,6 +11,7 @@ import utez.edu.mx.cleancheck.model.floor.FloorRepository;
 import utez.edu.mx.cleancheck.utils.ApiResponse;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -137,6 +138,31 @@ public class FloorService {
 
         return new ApiResponse<>(
                 floors, false, 200, "Pisos encontrados"
+        );
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<List<Floor>> createList(FloorDto floor) {
+        List<Floor> floors = floor.getFloors();
+        List<Floor> registerFloors = new ArrayList<>();
+        for (Floor f : floors) {
+            Building foundBuilding = buildingRepository.findById(f.getBuilding().getId()).orElse(null);
+            if (foundBuilding == null) {
+                return new ApiResponse<>(
+                        null, true, 400, "El edificio ingresado no esta registrado"
+                );
+            }
+
+            Floor newFloor = new Floor();
+            String id = UUID.randomUUID().toString();
+            newFloor.setId(id);
+            newFloor.setName(f.getName());
+            newFloor.setBuilding(foundBuilding);
+            Floor saveFloor = floorRepository.save(newFloor);
+            registerFloors.add(saveFloor);
+        }
+        return new ApiResponse<>(
+                registerFloors, false, 200, "Pisos registrados correctamente"
         );
     }
 }
