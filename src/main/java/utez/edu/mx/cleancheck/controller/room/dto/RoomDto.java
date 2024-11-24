@@ -2,7 +2,10 @@ package utez.edu.mx.cleancheck.controller.room.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import utez.edu.mx.cleancheck.model.room.Room;
 import utez.edu.mx.cleancheck.model.room.RoomState;
+
+import java.util.List;
 
 @Data
 public class RoomDto {
@@ -18,6 +21,8 @@ public class RoomDto {
     private RoomState newStatus;
     @NotNull(groups = {FindByStatus.class}, message = "El estado de la habitación es requerido")
     private RoomState status;
+    @NotNull(groups = {CreateList.class}, message = "La lista de habitaciones es requerida")
+    List<Room> rooms;
 
     public interface Create {}
 
@@ -26,4 +31,5 @@ public class RoomDto {
     public interface ChangeStatus {}
     public interface FindByFloor {}
     public interface FindByStatus {}
+    public interface CreateList {}
 }

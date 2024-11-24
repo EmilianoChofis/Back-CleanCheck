@@ -183,4 +183,22 @@ public class RoomController {
             );
         }
     }
+
+    @PostMapping("/create-list")
+    public ResponseEntity<ApiResponse<List<Room>>> createList(@Validated({RoomDto.CreateList.class}) @RequestBody RoomDto room) {
+        try {
+            ApiResponse<List<Room>> response = service.createList(room);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }

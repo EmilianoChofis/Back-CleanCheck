@@ -12,6 +12,7 @@ import utez.edu.mx.cleancheck.model.room.RoomState;
 import utez.edu.mx.cleancheck.utils.ApiResponse;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -172,6 +173,32 @@ public class RoomService {
         Room saveRoom = roomRepository.save(foundRoom);
         return new ApiResponse<>(
                 saveRoom, false, 200, "Estado de la habitacion actualizado correctamente"
+        );
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<List<Room>> createList(RoomDto room) {
+        List<Room> rooms = room.getRooms();
+        List<Room> registeredRooms = new ArrayList<>();
+        for (Room r : rooms) {
+            Floor foundFloor = floorRepository.findById(r.getFloor().getId()).orElse(null);
+            if (foundFloor == null) {
+                return new ApiResponse<>(
+                        null, true, 400, "El piso ingresado no esta registrado"
+                );
+            }
+            Room newRoom = new Room();
+            String id = UUID.randomUUID().toString();
+            newRoom.setId(id);
+            newRoom.setName(r.getName());
+            newRoom.setFloor(foundFloor);
+            newRoom.setIdentifier(r.getIdentifier());
+            newRoom.setStatus(RoomState.CHECKED);
+            Room saveRoom = roomRepository.save(newRoom);
+            registeredRooms.add(saveRoom);
+        }
+        return new ApiResponse<>(
+                registeredRooms, false, 200, "Habitaciones registradas correctamente"
         );
     }
 }
