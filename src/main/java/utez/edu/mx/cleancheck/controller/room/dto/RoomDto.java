@@ -23,6 +23,8 @@ public class RoomDto {
     private RoomState status;
     @NotNull(groups = {CreateList.class}, message = "La lista de habitaciones es requerida")
     List<Room> rooms;
+    @NotNull(groups = {FindByBuilding.class}, message = "El id del edificio es requerido")
+    private String buildingId;
 
     public interface Create {}
 
@@ -32,4 +34,5 @@ public class RoomDto {
     public interface FindByFloor {}
     public interface FindByStatus {}
     public interface CreateList {}
+    public interface FindByBuilding {}
 }

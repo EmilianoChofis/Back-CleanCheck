@@ -201,4 +201,22 @@ public class RoomController {
             );
         }
     }
+
+    @PostMapping("/getByBuilding")
+    public ResponseEntity<ApiResponse<List<Room>>> findByBuilding(@Validated({RoomDto.FindByBuilding.class}) @RequestBody RoomDto room) {
+        try {
+            ApiResponse<List<Room>> response = service.findByBuilding(room);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }

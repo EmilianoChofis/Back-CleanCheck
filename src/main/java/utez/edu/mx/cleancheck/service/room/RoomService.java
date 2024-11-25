@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.cleancheck.controller.room.dto.RoomDto;
+import utez.edu.mx.cleancheck.model.building.Building;
+import utez.edu.mx.cleancheck.model.building.BuildingRepository;
 import utez.edu.mx.cleancheck.model.floor.Floor;
 import utez.edu.mx.cleancheck.model.floor.FloorRepository;
 import utez.edu.mx.cleancheck.model.room.Room;
@@ -14,6 +16,7 @@ import utez.edu.mx.cleancheck.utils.ApiResponse;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,6 +26,7 @@ public class RoomService {
 
     private final RoomRepository roomRepository;
     private final FloorRepository floorRepository;
+    private final BuildingRepository buildingRepository;
 
     @Transactional(rollbackFor = {SQLException.class})
     public ApiResponse<Room> create(RoomDto room) {
@@ -200,5 +204,22 @@ public class RoomService {
         return new ApiResponse<>(
                 registeredRooms, false, 200, "Habitaciones registradas correctamente"
         );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Room>> findByBuilding(RoomDto dto) {
+        Optional<Building> building = buildingRepository.findById(dto.getBuildingId());
+        if (building.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "El edificio ingresado no esta registrado"
+            );
+        }
+
+        List<Room> rooms = roomRepository.findByBuildingId(dto.getBuildingId());
+
+        return new ApiResponse<>(
+                rooms, false, 200, "Habitaciones encontradas"
+        );
+
     }
 }
