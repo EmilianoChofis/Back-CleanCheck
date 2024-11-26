@@ -149,14 +149,9 @@ Resources:
           #Blank environment
           cp /dev/null /etc/environment
           
-          
-          # Establish environment variables
-          DB_SECRET=$(aws secretsmanager get-secret-value --secret-id cleanCheckProd-db-credentials --region us-east-1 --query SecretString --output text)
-          DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
-          
           # Set environment variables
           echo "export DB_USERNAME=dbadmin" | sudo tee -a /etc/environment
-          echo "export DB_PASSWORD=$DB_PASSWORD" | sudo tee -a /etc/environment
+          
           echo "export DB_HOST=${RDSInstance.Endpoint.Address}" | sudo tee -a /etc/environment
           echo "export DB_NAME=${DBName}" | sudo tee -a /etc/environment
           echo "export AWS_S3_BUCKET=${S3Bucket}" | sudo tee -a /etc/environment
@@ -165,6 +160,13 @@ Resources:
           echo "export JWT_SECRET=${JWT}" | sudo tee -a /etc/environment
           echo "export AWS_ACCESS_KEY_ID=${ACCESS}" | sudo tee -a /etc/environment
           echo "export AWS_SECRET_ACCESS_KEY=${KEY}" | sudo tee -a /etc/environment
+          
+          
+          # Establish environment variables
+          DB_SECRET=$(aws secretsmanager get-secret-value --secret-id cleanCheckProd-db-credentials --region us-east-1 --query SecretString --output text)
+          DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
+          
+          echo "export DB_PASSWORD=$DB_PASSWORD" | sudo tee -a /etc/environment
           
           # Copy environment variables to the app directory
           cp /etc/environment /home/ubuntu/Back-CleanCheck/.env
