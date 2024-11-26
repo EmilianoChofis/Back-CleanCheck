@@ -145,11 +145,9 @@ Resources:
           
           #Set the directory for safe
           git config --global --add safe.directory /home/ubuntu/Back-CleanCheck
-          
-          REGION="us-east-1"
-          
+                    
           # Establish environment variables
-          DB_SECRET=$(aws secretsmanager get-secret-value --secret-id DBSecret --region $REGION --query SecretString --output text)
+          DB_SECRET=$(aws secretsmanager get-secret-value --secret-id DBSecret --region us-east-1 --query SecretString --output text)
           DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
           
           # Set environment variables
@@ -173,7 +171,7 @@ Resources:
           # Docker compose build and run
           docker compose build --no-cache
           sleep 30
-          #docker compose up app -d
+          docker compose up app -d
 Outputs:
   EC2PublicIP:
     Description: Public IP of EC2 Instance
