@@ -151,7 +151,7 @@ Resources:
           
           
           # Establish environment variables
-          DB_SECRET=$(aws secretsmanager get-secret-value --secret-id ${DBSecret} --region us-east-1 --query SecretString --output text)
+          DB_SECRET=$(aws secretsmanager get-secret-value --secret-id cleanCheckProd-db-credentials --region us-east-1 --query SecretString --output text)
           DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
           
           # Set environment variables
