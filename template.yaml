@@ -159,9 +159,9 @@ Resources:
           JWT_SECRET=$(sudo aws secretsmanager get-secret-value --secret-id ${JWTSecret} --region ${AWS::Region} --query SecretString --output text | jq -r .jwt_secret)
           
           # Set environment variables
-          echo "export JWT_SECRET=${JWT_SECRET}" | sudo tee -a /etc/environment
+          #echo "export JWT_SECRET=${JWT_SECRET}" | sudo tee -a /etc/environment
           echo "export DB_USERNAME=dbadmin" | sudo tee -a /etc/environment
-          echo "export DB_PASSWORD=${DB_PASSWORD}" | sudo tee -a /etc/environment
+          #echo "export DB_PASSWORD=${DB_PASSWORD}" | sudo tee -a /etc/environment
           echo "export DB_HOST=${RDSInstance.Endpoint.Address}" | sudo tee -a /etc/environment
           echo "export DB_NAME=${DBName}" | sudo tee -a /etc/environment
           
