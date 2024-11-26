@@ -63,7 +63,7 @@ Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: 'cleancheck-prod'
+      BucketName: !Join ['', ['cleancheck-', !Ref DBName, '-', !Ref "AWS::AccountId"] ]
 
 
   # EC2 Instance Role and Profile
