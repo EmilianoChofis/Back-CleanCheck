@@ -145,37 +145,27 @@ Resources:
           
           #Set the directory for safe
           git config --global --add safe.directory /home/ubuntu/Back-CleanCheck
-                    
+          
+          #Blank environment
+          cp /dev/null /etc/environment
+          
+          
           # Establish environment variables
           DB_SECRET=$(aws secretsmanager get-secret-value --secret-id ${DBSecret} --region us-east-1 --query SecretString --output text)
           DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
           
-          # Functions to update the env
-          add_or_update_env_var() {
-              local key=$1
-              local value=$2
-              local file="/etc/environment"
-
-              # Si la variable ya existe, reemplázala; si no, añádela al archivo
-              if grep -q "^${key}=" "$file"; then
-                  sudo sed -i "s|^${key}=.*|${key}=${value}|g" "$file"
-              else
-                  echo "${key}=${value}" | sudo tee -a "$file" > /dev/null
-              fi
-          }
-
           # Set environment variables
-          add_or_update_env_var "DB_USERNAME" "dbadmin"
-          add_or_update_env_var "DB_PASSWORD" "$DB_PASSWORD"
-          add_or_update_env_var "DB_HOST" "${RDSInstance.Endpoint.Address}"
-          add_or_update_env_var "DB_NAME" "${DBName}"
-          add_or_update_env_var "AWS_S3_BUCKET" "${S3Bucket}"
+          echo "export DB_USERNAME=dbadmin" | sudo tee -a /etc/environment
+          echo "export DB_PASSWORD=$DB_PASSWORD" | sudo tee -a /etc/environment
+          echo "export DB_HOST=${RDSInstance.Endpoint.Address}" | sudo tee -a /etc/environment
+          echo "export DB_NAME=${DBName}" | sudo tee -a /etc/environment
+          echo "export AWS_S3_BUCKET=${S3Bucket}" | sudo tee -a /etc/environment
           
           # Set environment variables from GitHub Secrets
-          add_or_update_env_var "JWT_SECRET" "${JWT}"
-          add_or_update_env_var "AWS_ACCESS_KEY_ID" "${ACCESS}"
-          add_or_update_env_var "AWS_SECRET_ACCESS_KEY" "${KEY}"
-
+          echo "export JWT_SECRET=${JWT}" | sudo tee -a /etc/environment
+          echo "export AWS_ACCESS_KEY_ID=${ACCESS}" | sudo tee -a /etc/environment
+          echo "export AWS_SECRET_ACCESS_KEY=${KEY}" | sudo tee -a /etc/environment
+          
           # Copy environment variables to the app directory
           cp /etc/environment /home/ubuntu/Back-CleanCheck/.env
           
