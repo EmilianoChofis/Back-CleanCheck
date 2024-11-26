@@ -6,6 +6,6 @@ s3_prefix = "cleanCheckProd"
 region = "us-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
-parameter_overrides = "DBName=\"cleancheck\" EC2InstanceType=\"t2.small\" KeyPairName=\"cleanCheck\""
+parameter_overrides = "DBName=\"cleancheck\" EC2InstanceType=\"t2.large\" KeyPairName=\"cleanCheck\""
 image_repositories = []
 disable_rollback = true

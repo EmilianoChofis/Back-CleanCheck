@@ -7,7 +7,7 @@ Parameters:
     Default: cleancheck
   EC2InstanceType:
     Type: String
-    Default: t2.small
+    Default: t2.large
   KeyPairName:
     Type: AWS::EC2::KeyPair::KeyName
     Description: Name of an existing EC2 KeyPair
@@ -136,8 +136,8 @@ Resources:
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: !Ref EC2InstanceType
-      ImageId: ami-0866a3c8686eaeeba
+      InstanceType: t2.large
+      ImageId: ami-0fc3a637f48b2fdd4
       KeyName: !Ref KeyPairName
       SecurityGroupIds:
         - !Ref EC2SecurityGroup
@@ -150,34 +150,28 @@ Resources:
           #Clone the repository
           git clone https://github.com/EmilianoChofis/Back-CleanCheck.git /home/ubuntu/Back-CleanCheck
           
-          #Change directory
-          cd /home/ubuntu/Back-CleanCheck
-          
           #Set the directory for safe
           git config --global --add safe.directory /home/ubuntu/Back-CleanCheck
           
-          #Checkout to the deploy branch
-          git checkout deploy
-          
-          #copy the setup.sh to the home directory
-          cp /home/ubuntu/Back-CleanCheck/setup.sh /home/ubuntu/
-          
-          #copy the docker-compose.yml to the home directory
-          cp /home/ubuntu/Back-CleanCheck/docker-compose.yml /home/ubuntu/
-          
           # Establish environment variables
+          DB_SECRET=$(sudo aws secretsmanager get-secret-value --secret-id ${DBSecret} --region ${AWS::Region} --query SecretString --output text)
+          DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
+          JWT_SECRET=$(sudo aws secretsmanager get-secret-value --secret-id ${JWTSecret} --region ${AWS::Region} --query SecretString --output text | jq -r .jwt_secret)
+          
+          # Set environment variables
+          echo "export JWT_SECRET=${JWT_SECRET}" | sudo tee -a /etc/environment
+          echo "export DB_USERNAME=dbadmin" | sudo tee -a /etc/environment
+          echo "export DB_PASSWORD=${DB_PASSWORD}" | sudo tee -a /etc/environment
           echo "export DB_HOST=${RDSInstance.Endpoint.Address}" | sudo tee -a /etc/environment
           echo "export DB_NAME=${DBName}" | sudo tee -a /etc/environment
-          echo "export DBSecret=${DBSecret}" | sudo tee -a /etc/environment
           
-          #Adding sleep 
-          sleep 10
+          # Copy environment variables to the app directory
+          cp /etc/environment /home/ubuntu/Back-CleanCheck/.env
           
-          # Setting up the permission for the setup.sh file
-          chmod +x /home/ubuntu/setup.sh
-          
-          # Running the setup.sh file
-          /home/ubuntu/setup.sh
+          # Docker compose build and run
+          docker compose build --no-cache
+          sleep 30
+          docker compose up app -d
 Outputs:
   EC2PublicIP:
     Description: Public IP of EC2 Instance
