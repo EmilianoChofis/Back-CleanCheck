@@ -13,12 +13,15 @@ Parameters:
     Description: Name of an existing EC2 KeyPair
   ACCESS:
     Type: String
+    Default: 'access'
     Description: 'The access key for the S3 bucket'
   KEY:
     Type: String
+    Default: 'key'
     Description: 'The secret key for the S3 bucket'
   JWT:
     Type: String
+    Default: 'jwt'
     Description: 'The JWT secret for the app'
 
 
@@ -150,22 +153,27 @@ Resources:
           DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
           
           # Set environment variables
-          echo "export JWT_SECRET=${JWT}" | sudo tee -a /etc/environment
           echo "export DB_USERNAME=dbadmin" | sudo tee -a /etc/environment
           echo "export DB_PASSWORD=$DB_PASSWORD" | sudo tee -a /etc/environment
           echo "export DB_HOST=${RDSInstance.Endpoint.Address}" | sudo tee -a /etc/environment
           echo "export DB_NAME=${DBName}" | sudo tee -a /etc/environment
           echo "export AWS_S3_BUCKET=${S3Bucket}" | sudo tee -a /etc/environment
+          
+          # Set environment variables from GitHub Secrets
+          echo "export JWT_SECRET=${JWT}" | sudo tee -a /etc/environment
           echo "export AWS_ACCESS_KEY_ID=${ACCESS}" | sudo tee -a /etc/environment
           echo "export AWS_SECRET_ACCESS_KEY=${KEY}" | sudo tee -a /etc/environment
           
           # Copy environment variables to the app directory
           cp /etc/environment /home/ubuntu/Back-CleanCheck/.env
           
+          #Change directory to the app
+          cd /home/ubuntu/Back-CleanCheck
+          
           # Docker compose build and run
           docker compose build --no-cache
           sleep 30
-          docker compose up app -d
+          #docker compose up app -d
 Outputs:
   EC2PublicIP:
     Description: Public IP of EC2 Instance
