@@ -32,6 +32,7 @@ public class BuildingService {
         String id = UUID.randomUUID().toString();
         newBuilding.setId(id);
         newBuilding.setName(building.getName());
+        newBuilding.setNumber(building.getNumber());
         Building saveBuilding = repository.save(newBuilding);
         return new ApiResponse<>(
                 saveBuilding, false, 200, "Edificio registrado correctamente"

@@ -99,25 +99,6 @@ public class FloorController {
         }
     }
 
-    @Transactional(readOnly = true)
-    @PostMapping("/findByNumber")
-    public ResponseEntity<ApiResponse<Floor>> findByNumber(@Valid @RequestBody int number) {
-        try {
-            ApiResponse<Floor> response = service.findByNumber(number);
-            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
-            return new ResponseEntity<>(
-                    response,
-                    statusCode
-            );
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ApiResponse<>(
-                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
     @Transactional(rollbackFor = Exception.class)
     @PutMapping("/update")
     public ResponseEntity<ApiResponse<Floor>> update(@Validated({FloorDto.Update.class}) @RequestBody FloorDto floor) {
@@ -155,4 +136,43 @@ public class FloorController {
             );
         }
     }
+
+    @Transactional(readOnly = true)
+    @PostMapping("/getByBulding")
+    public ResponseEntity<ApiResponse<List<Floor>>> getByBuilding(@Validated({FloorDto.FindByBuildingId.class}) @RequestBody FloorDto dto) {
+        try {
+            ApiResponse<List<Floor>> response = service.findByBuildingId(dto);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PostMapping("/create-list")
+    public ResponseEntity<ApiResponse<List<Floor>>> createList(@Validated({FloorDto.CreateList.class}) @RequestBody FloorDto floor) {
+        try {
+            ApiResponse<List<Floor>> response = service.createList(floor);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()
+                    ),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
 }
