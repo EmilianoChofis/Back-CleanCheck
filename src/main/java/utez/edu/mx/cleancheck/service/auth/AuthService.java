@@ -120,6 +120,9 @@ public class AuthService {
             );
 
         User saveUser = userCreate(user, clientRole, passwordEncoder, userRepository);
+
+        saveUser.setPassword(null);
+
         return new ApiResponse<>(
                 saveUser, false, HttpStatus.OK.value(), "Receptionista registrado correctamente"
         );
@@ -139,6 +142,9 @@ public class AuthService {
             );
 
         User saveUser = userCreate(user, clientRole, passwordEncoder, userRepository);
+
+        saveUser.setPassword(null);
+
         return new ApiResponse<>(
                 saveUser, false, HttpStatus.OK.value(), "Mucama registrado correctamente"
         );
@@ -159,6 +165,9 @@ public class AuthService {
             );
 
         User saveUser = userCreate(user, clientRole, passwordEncoder, userRepository);
+
+        saveUser.setPassword(null);
+
         return new ApiResponse<>(
                 saveUser, false, HttpStatus.OK.value(), "Gerente registrado correctamente"
         );

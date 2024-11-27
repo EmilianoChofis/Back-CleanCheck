@@ -94,6 +94,42 @@ public class RoomController {
         }
     }
 
+    @PostMapping("/getByFloor")
+    public ResponseEntity<ApiResponse<List<Room>>> findByFloor(@Validated({RoomDto.FindByFloor.class}) @RequestBody RoomDto room) {
+        try {
+            ApiResponse<List<Room>> response = service.findByFloor(room);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PostMapping("/getByStatus")
+    public ResponseEntity<ApiResponse<List<Room>>> findByStatus(@Validated({RoomDto.FindByStatus.class}) @RequestBody RoomDto room) {
+        try {
+            ApiResponse<List<Room>> response = service.findByStatus(room);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
     @PutMapping("/update")
     public ResponseEntity<ApiResponse<Room>> update(@Validated({RoomDto.Update.class}) @RequestBody RoomDto room) {
         try {
@@ -116,6 +152,60 @@ public class RoomController {
     public ResponseEntity<ApiResponse<Room>> delete(@Validated({RoomDto.Delete.class}) @RequestBody RoomDto room) {
         try {
             ApiResponse<Room> response = service.delete(room);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PutMapping("/change-status")
+    public ResponseEntity<ApiResponse<Room>> changeStatus(@Validated({RoomDto.ChangeStatus.class}) @RequestBody RoomDto room) {
+        try {
+            ApiResponse<Room> response = service.changeState(room);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PostMapping("/create-list")
+    public ResponseEntity<ApiResponse<List<Room>>> createList(@Validated({RoomDto.CreateList.class}) @RequestBody RoomDto room) {
+        try {
+            ApiResponse<List<Room>> response = service.createList(room);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PostMapping("/getByBuilding")
+    public ResponseEntity<ApiResponse<List<Room>>> findByBuilding(@Validated({RoomDto.FindByBuilding.class}) @RequestBody RoomDto room) {
+        try {
+            ApiResponse<List<Room>> response = service.findByBuilding(room);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
             return new ResponseEntity<>(
                     response,
