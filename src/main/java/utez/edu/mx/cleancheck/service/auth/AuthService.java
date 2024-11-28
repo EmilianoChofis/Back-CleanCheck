@@ -63,7 +63,7 @@ public class AuthService {
         newUser.setRole(foundRole);
         newUser.setBlocked(true);
         newUser.setStatus(true);
-        BeanUtils.copyProperties(user, newUser);
+        BeanUtils.copyProperties(user, newUser, "id");
         return userRepository.save(newUser);
     }
 

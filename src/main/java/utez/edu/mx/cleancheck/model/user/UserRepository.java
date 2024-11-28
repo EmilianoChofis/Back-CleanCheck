@@ -17,10 +17,10 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query(value = "SELECT u FROM User u WHERE UPPER(u.name) LIKE UPPER(?1)")
     List<User> searchByPaginationName(String value, Pageable offset);
 
-    @Query(value = "SELECT u.id, u.name, u.status, u.blocked, u.createdAt, u.email, u.role FROM User u WHERE UPPER(u.email) LIKE UPPER(?1)")
+    @Query(value = "SELECT u FROM User u WHERE UPPER(u.email) LIKE UPPER(?1)")
     List<User> searchByPaginationEmail(String value, Pageable offset);
 
-    @Query(value = "SELECT u.id, u.name, u.status, u.blocked, u.createdAt, u.email, u.role FROM User u WHERE UPPER(u.role.name) LIKE UPPER(?1)")
+    @Query(value = "SELECT u FROM User u WHERE UPPER(u.role.name) LIKE UPPER(?1)")
     List<User> searchByPaginationRole(String value, Pageable offset);
 
 }

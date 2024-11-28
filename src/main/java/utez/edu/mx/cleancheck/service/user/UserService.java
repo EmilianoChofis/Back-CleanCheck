@@ -5,19 +5,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utez.edu.mx.cleancheck.controller.user.dto.UserDto;
 import utez.edu.mx.cleancheck.model.record.Record;
 import utez.edu.mx.cleancheck.model.user.User;
 import utez.edu.mx.cleancheck.model.user.UserRepository;
 import utez.edu.mx.cleancheck.utils.ApiResponse;
 import utez.edu.mx.cleancheck.utils.PaginationDto;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-
 public class UserService {
 
     private final UserRepository repository;
@@ -102,4 +103,44 @@ public class UserService {
                 users, false, 200, "Registros encontrados"
         );
     }
+
+    @Transactional(rollbackFor = SQLException.class)
+    public ApiResponse<User> update(UserDto user) {
+
+        Optional<User> userOptional = repository.findById(user.getId());
+        if (userOptional.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "El usuario no existe"
+            );
+        }
+
+        User userUpdate = userOptional.get();
+        userUpdate.setName(user.getName());
+        userUpdate.setEmail(user.getEmail());
+        userUpdate.setRole(user.getRole());
+        userUpdate.setStatus(user.getStatus());
+
+        return new ApiResponse<>(
+                repository.save(userUpdate), false, 200, "Usuario actualizado"
+        );
+    }
+
+    @Transactional(rollbackFor = SQLException.class)
+    public ApiResponse<User> changeStatus(UserDto user) {
+
+        Optional<User> userOptional = repository.findById(user.getId());
+        if (userOptional.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "El usuario no existe"
+            );
+        }
+
+        User userUpdate = userOptional.get();
+        userUpdate.setStatus(!userUpdate.getStatus());
+
+        return new ApiResponse<>(
+                repository.save(userUpdate), false, 200, "Usuario actualizado"
+        );
+    }
+
 }
