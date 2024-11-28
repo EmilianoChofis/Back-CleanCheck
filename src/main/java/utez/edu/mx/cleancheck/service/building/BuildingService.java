@@ -33,6 +33,7 @@ public class BuildingService {
         newBuilding.setId(id);
         newBuilding.setName(building.getName());
         newBuilding.setNumber(building.getNumber());
+        newBuilding.setStatus(true);
         Building saveBuilding = repository.save(newBuilding);
         return new ApiResponse<>(
                 saveBuilding, false, 200, "Edificio registrado correctamente"
@@ -118,5 +119,24 @@ public class BuildingService {
         return new ApiResponse<>(
                 building, false, 200, "Edificio eliminado correctamente"
         );
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<Building> changeStatus(BuildingDto buildingDto) {
+
+        Building building = repository.findById(buildingDto.getId()).orElse(null);
+
+        if (building == null) {
+            return new ApiResponse<>(
+                    null, true, 404, "El edificio ingresado no esta registrado"
+            );
+        }
+
+        building.setStatus(!building.getStatus());
+        Building saveBuilding = repository.save(building);
+        return new ApiResponse<>(
+                saveBuilding, false, 200, "Estado del edificio actualizado correctamente"
+        );
+
     }
 }

@@ -175,4 +175,24 @@ public class FloorController {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @PutMapping("/change-status")
+    public ResponseEntity<ApiResponse<Floor>> changeStatus(@Validated({FloorDto.ChangeStatus.class}) @RequestBody FloorDto floor) {
+        try {
+            ApiResponse<Floor> response = service.changeStatus(floor);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()
+                    ),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
 }

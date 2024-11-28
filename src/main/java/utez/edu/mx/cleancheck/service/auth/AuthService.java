@@ -58,13 +58,19 @@ public class AuthService {
     private User userCreate(UserDto user, Role foundRole, PasswordEncoder passwordEncoder, UserRepository userRepository) {
         User newUser = new User();
         String idUser = UUID.randomUUID().toString();
-        newUser.setId(idUser);
+        user.setId(idUser);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        newUser.setRole(foundRole);
+        user.setRole(foundRole);
         newUser.setBlocked(true);
-        newUser.setStatus(true);
-        BeanUtils.copyProperties(user, newUser, "id");
-        return userRepository.save(newUser);
+        user.setStatus(true);
+        BeanUtils.copyProperties(user, newUser);
+        newUser = userRepository.save(newUser);
+
+        User userResponse = new User();
+        BeanUtils.copyProperties(newUser, userResponse);
+        userResponse.setPassword(null);
+
+        return userResponse;
     }
 
 
@@ -92,6 +98,7 @@ public class AuthService {
             UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
             String token = jwtProvider.generateToken(userDetails);
             SignedDto signedDto = new SignedDto(token, userFound);
+            signedDto.getUser().setPassword(null);
             return new ApiResponse<>(
                     signedDto, false, HttpStatus.OK.value(), "Login correcto!"
             );
@@ -121,8 +128,6 @@ public class AuthService {
 
         User saveUser = userCreate(user, clientRole, passwordEncoder, userRepository);
 
-        saveUser.setPassword(null);
-
         return new ApiResponse<>(
                 saveUser, false, HttpStatus.OK.value(), "Receptionista registrado correctamente"
         );
@@ -142,8 +147,6 @@ public class AuthService {
             );
 
         User saveUser = userCreate(user, clientRole, passwordEncoder, userRepository);
-
-        saveUser.setPassword(null);
 
         return new ApiResponse<>(
                 saveUser, false, HttpStatus.OK.value(), "Mucama registrado correctamente"
@@ -165,8 +168,6 @@ public class AuthService {
             );
 
         User saveUser = userCreate(user, clientRole, passwordEncoder, userRepository);
-
-        saveUser.setPassword(null);
 
         return new ApiResponse<>(
                 saveUser, false, HttpStatus.OK.value(), "Gerente registrado correctamente"

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 public class RoomDto {
-    @NotNull(groups = {Update.class, Delete.class, ChangeStatus.class}, message = "El id de la habitación es requerido")
+    @NotNull(groups = {Update.class, Delete.class, ChangeStatus.class, ChangeRoomStatus.class}, message = "El id de la habitación es requerido")
     private String id;
     @NotNull(groups = {Create.class, Update.class}, message = "El identificador de la habitación es requerido")
     private String identifier;
@@ -35,4 +35,5 @@ public class RoomDto {
     public interface FindByStatus {}
     public interface CreateList {}
     public interface FindByBuilding {}
+    public interface ChangeRoomStatus{}
 }

@@ -49,6 +49,7 @@ public class RoomService {
         newRoom.setFloor(foundFloor);
         newRoom.setIdentifier(room.getIdentifier());
         newRoom.setStatus(RoomState.CHECKED);
+        newRoom.setRoomStatus(true);
         Room saveRoom = roomRepository.save(newRoom);
         return new ApiResponse<>(
                 saveRoom, false, 200, "Habitacion registrada correctamente"
@@ -222,4 +223,21 @@ public class RoomService {
         );
 
     }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<Room> changeRoomStatus(RoomDto dto) {
+        Room foundRoom = roomRepository.findById(dto.getId()).orElse(null);
+        if (foundRoom == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion ingresada no esta registrada"
+            );
+        }
+        foundRoom.setRoomStatus(!foundRoom.getRoomStatus());
+        Room saveRoom = roomRepository.save(foundRoom);
+        return new ApiResponse<>(
+                saveRoom, false, 200, "Estado de la habitacion actualizado correctamente"
+        );
+    }
+
+
 }
