@@ -10,6 +10,7 @@ import utez.edu.mx.cleancheck.model.room.Room;
 import utez.edu.mx.cleancheck.model.user.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,7 +33,7 @@ public class Report {
 
     @OneToMany(mappedBy = "reportId", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Image> images;
+    private List<Image> images = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")
