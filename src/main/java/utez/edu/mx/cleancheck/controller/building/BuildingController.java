@@ -129,4 +129,22 @@ public class BuildingController {
             );
         }
     }
+
+    @PutMapping("/changeStatus")
+    public ResponseEntity<ApiResponse<Building>> changeStatus(@Validated({BuildingDto.ChangeStatus.class}) @RequestBody BuildingDto building) {
+        try {
+            ApiResponse<Building> response = service.changeStatus(building);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }

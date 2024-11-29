@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class BuildingDto {
 
-    @NotNull(groups = {UpdateBuilding.class, DeleteBuilding.class})
+    @NotNull(groups = {UpdateBuilding.class, DeleteBuilding.class, ChangeStatus.class}, message = "El id del edificio es requerido")
     private String id;
 
     @NotNull(groups = CreateBuilding.class)
@@ -23,5 +23,7 @@ public class BuildingDto {
 
     public interface DeleteBuilding {
     }
+
+    public interface ChangeStatus{}
 
 }

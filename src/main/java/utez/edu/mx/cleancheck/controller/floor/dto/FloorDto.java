@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class FloorDto {
 
-    @NotNull(groups = {Update.class, FindById.class}, message = "El id del piso es requerido")
+    @NotNull(groups = {Update.class, FindById.class, ChangeStatus.class}, message = "El id del piso es requerido")
     private String id;
 
     @NotNull(groups = {Create.class, Update.class}, message = "El nombre del piso es requerido")
@@ -34,6 +34,9 @@ public class FloorDto {
     }
 
     public interface CreateList {
+    }
+
+    public interface ChangeStatus {
     }
 
 }

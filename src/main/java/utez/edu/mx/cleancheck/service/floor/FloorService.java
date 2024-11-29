@@ -39,6 +39,7 @@ public class FloorService {
         newFloor.setId(id);
         newFloor.setName(floor.getName());
         newFloor.setBuilding(foundBuilding);
+        newFloor.setStatus(true);
         Floor saveFloor = floorRepository.save(newFloor);
         return new ApiResponse<>(
                 saveFloor, false, 200, "Piso registrado correctamente"
@@ -163,6 +164,21 @@ public class FloorService {
         }
         return new ApiResponse<>(
                 registerFloors, false, 200, "Pisos registrados correctamente"
+        );
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<Floor> changeStatus(FloorDto dto) {
+        Floor foundFloor = floorRepository.findById(dto.getId()).orElse(null);
+        if (foundFloor == null) {
+            return new ApiResponse<>(
+                    foundFloor, true, 400, "El piso ingresado no esta registrado"
+            );
+        }
+        foundFloor.setStatus(!foundFloor.getStatus());
+        Floor saveFloor = floorRepository.save(foundFloor);
+        return new ApiResponse<>(
+                saveFloor, false, 200, "Estado del piso actualizado correctamente"
         );
     }
 }
