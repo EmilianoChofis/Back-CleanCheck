@@ -23,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query(value = "SELECT u FROM User u WHERE UPPER(u.role.name) LIKE UPPER(?1)")
     List<User> searchByPaginationRole(String value, Pageable offset);
 
+    Boolean existsByEmail(String email);
+
 }

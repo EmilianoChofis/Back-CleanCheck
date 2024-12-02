@@ -20,24 +20,24 @@ import utez.edu.mx.cleancheck.utils.ApiResponse;
 
 public class ReportController {
 
-    private final ReportService service;
-
-    @PostMapping("/create")
-    public ResponseEntity<ApiResponse<Report>> create(@RequestBody ReportDto report) {
-        try {
-            ApiResponse<Report> response = service.create(report);
-            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
-            return new ResponseEntity<>(
-                    response,
-                    statusCode
-            );
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ApiResponse<>(
-                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
-    }
+//    private final ReportService service;
+//
+//    @PostMapping("/create")
+//    public ResponseEntity<ApiResponse<Report>> create(@RequestBody ReportDto report) {
+//        try {
+//            ApiResponse<Report> response = service.create(report);
+//            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+//            return new ResponseEntity<>(
+//                    response,
+//                    statusCode
+//            );
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(
+//                    new ApiResponse<>(
+//                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+//                    HttpStatus.INTERNAL_SERVER_ERROR
+//            );
+//        }
+//    }
 
 }
