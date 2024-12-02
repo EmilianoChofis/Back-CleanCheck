@@ -6,7 +6,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import utez.edu.mx.cleancheck.controller.user.dto.UserDto;
+import utez.edu.mx.cleancheck.controller.user.dto.UpdateUserDto;
+import utez.edu.mx.cleancheck.model.role.Role;
+import utez.edu.mx.cleancheck.model.role.RoleRepository;
 import utez.edu.mx.cleancheck.model.user.User;
 import utez.edu.mx.cleancheck.model.user.UserRepository;
 import utez.edu.mx.cleancheck.utils.ApiResponse;
@@ -22,6 +24,8 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository repository;
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public Optional<User> findByEmail (String email) {
@@ -132,41 +136,47 @@ public class UserService {
         );
     }
 
-//    @Transactional(rollbackFor = SQLException.class)
-//    public ApiResponse<User> update(UserDto user) {
-//
-//        Optional<User> userOptional = repository.findById(user.getId());
-//        if (userOptional.isEmpty()) {
-//            return new ApiResponse<>(
-//                    null, true, 400, "El usuario no existe"
-//            );
-//        }
-//
-//        User userUpdate = userOptional.get();
-//        userUpdate.setName(user.getName());
-//        userUpdate.setEmail(user.getEmail());
-//        userUpdate.setRole(user.getRole());
-//        return new ApiResponse<>(
-//                repository.save(userUpdate), false, 200, "Usuario actualizado"
-//        );
-//    }
-//
-//    @Transactional(rollbackFor = SQLException.class)
-//    public ApiResponse<User> changeStatus(UserDto user) {
-//
-//        Optional<User> userOptional = repository.findById(user.getId());
-//        if (userOptional.isEmpty()) {
-//            return new ApiResponse<>(
-//                    null, true, 400, "El usuario no existe"
-//            );
-//        }
-//
-//        User userUpdate = userOptional.get();
-//        userUpdate.setStatus(!userUpdate.getStatus());
-//
-//        return new ApiResponse<>(
-//                repository.save(userUpdate), false, 200, "Usuario actualizado"
-//        );
-//    }
+    @Transactional(rollbackFor = SQLException.class)
+    public ApiResponse<User> update (UpdateUserDto user) {
+        User updateUser = repository.findById(user.getId()).orElse(null);
+        if (updateUser == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "El usuario ingresado no existe"
+            );
+        }
+
+        Role roleFound = roleRepository.findById(user.getRoleId()).orElse(null);
+        if (roleFound == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "El rol ingresado no existe"
+            );
+        }
+
+        if (!updateUser.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(user.getEmail())) {
+            return new ApiResponse<>(
+                    null, true, 400, "El correo electronico ya esta registrado"
+            );
+        }
+        updateUser.setName(user.getName());
+        updateUser.setEmail(user.getEmail());
+        updateUser.setRole(roleFound);
+        return new ApiResponse<>(
+                repository.save(updateUser), false, 200, "Usuario actualizado correctamente"
+        );
+    }
+
+    @Transactional(rollbackFor = SQLException.class)
+    public ApiResponse<User> changeStatus (String id) {
+        User user = repository.findById(id).orElse(null);
+        if (user == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "El usuario ingresado no existe"
+            );
+        }
+        user.setStatus(!user.getStatus());
+        return new ApiResponse<>(
+                repository.save(user), false, 200, "Usuario actualizado"
+        );
+    }
 
 }

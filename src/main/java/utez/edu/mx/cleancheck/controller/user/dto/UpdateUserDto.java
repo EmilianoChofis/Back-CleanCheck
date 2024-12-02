@@ -2,12 +2,14 @@ package utez.edu.mx.cleancheck.controller.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 
 public class UpdateUserDto {
+
+    @NotBlank(message = "El id del usuario es requerido")
+    private String id;
 
     @NotBlank(message = "El nombre es requerido")
     private String name;
