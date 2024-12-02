@@ -5,8 +5,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import utez.edu.mx.cleancheck.controller.user.dto.UserDto;
-import utez.edu.mx.cleancheck.model.record.Record;
 import utez.edu.mx.cleancheck.model.user.User;
 import utez.edu.mx.cleancheck.model.user.UserRepository;
 import utez.edu.mx.cleancheck.utils.ApiResponse;
@@ -26,6 +26,34 @@ public class UserService {
     @Transactional(readOnly = true)
     public Optional<User> findByEmail (String email) {
         return repository.findByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<User> findById(String id) {
+        User user = repository.findById(id).orElse(null);
+        if (user == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "El usuario ingresado no existe"
+            );
+        }
+
+        return new ApiResponse<>(
+                user, false, 200, "Usuario encontrado"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<User> findByEmailAll(String email) {
+        User user = repository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "El usuario ingresado no existe"
+            );
+        }
+
+        return new ApiResponse<>(
+                user, false, 200, "Usuario encontrado"
+        );
     }
 
     @Transactional(readOnly = true)
@@ -104,43 +132,41 @@ public class UserService {
         );
     }
 
-    @Transactional(rollbackFor = SQLException.class)
-    public ApiResponse<User> update(UserDto user) {
-
-        Optional<User> userOptional = repository.findById(user.getId());
-        if (userOptional.isEmpty()) {
-            return new ApiResponse<>(
-                    null, true, 400, "El usuario no existe"
-            );
-        }
-
-        User userUpdate = userOptional.get();
-        userUpdate.setName(user.getName());
-        userUpdate.setEmail(user.getEmail());
-        userUpdate.setRole(user.getRole());
-        userUpdate.setStatus(user.getStatus());
-
-        return new ApiResponse<>(
-                repository.save(userUpdate), false, 200, "Usuario actualizado"
-        );
-    }
-
-    @Transactional(rollbackFor = SQLException.class)
-    public ApiResponse<User> changeStatus(UserDto user) {
-
-        Optional<User> userOptional = repository.findById(user.getId());
-        if (userOptional.isEmpty()) {
-            return new ApiResponse<>(
-                    null, true, 400, "El usuario no existe"
-            );
-        }
-
-        User userUpdate = userOptional.get();
-        userUpdate.setStatus(!userUpdate.getStatus());
-
-        return new ApiResponse<>(
-                repository.save(userUpdate), false, 200, "Usuario actualizado"
-        );
-    }
+//    @Transactional(rollbackFor = SQLException.class)
+//    public ApiResponse<User> update(UserDto user) {
+//
+//        Optional<User> userOptional = repository.findById(user.getId());
+//        if (userOptional.isEmpty()) {
+//            return new ApiResponse<>(
+//                    null, true, 400, "El usuario no existe"
+//            );
+//        }
+//
+//        User userUpdate = userOptional.get();
+//        userUpdate.setName(user.getName());
+//        userUpdate.setEmail(user.getEmail());
+//        userUpdate.setRole(user.getRole());
+//        return new ApiResponse<>(
+//                repository.save(userUpdate), false, 200, "Usuario actualizado"
+//        );
+//    }
+//
+//    @Transactional(rollbackFor = SQLException.class)
+//    public ApiResponse<User> changeStatus(UserDto user) {
+//
+//        Optional<User> userOptional = repository.findById(user.getId());
+//        if (userOptional.isEmpty()) {
+//            return new ApiResponse<>(
+//                    null, true, 400, "El usuario no existe"
+//            );
+//        }
+//
+//        User userUpdate = userOptional.get();
+//        userUpdate.setStatus(!userUpdate.getStatus());
+//
+//        return new ApiResponse<>(
+//                repository.save(userUpdate), false, 200, "Usuario actualizado"
+//        );
+//    }
 
 }

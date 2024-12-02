@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 import utez.edu.mx.cleancheck.model.building.Building;
 import utez.edu.mx.cleancheck.model.room.Room;
 
@@ -27,10 +29,12 @@ public class Floor {
     @JoinColumn(name = "building_id")
     private Building building;
 
-    @Column(name = "status", columnDefinition = "BOOL DEFAULT TRUE")
+    @ColumnDefault("true")
+    @Column(insertable = false)
     private Boolean status;
 
-    @Column(name = "created_at", insertable = false, columnDefinition = "TIMESTAMP DEFAULT NOW()")
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 

@@ -40,10 +40,10 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<ApiResponse<User>> update(@Validated({UserDto.Update.class}) @RequestBody UserDto user) {
+    @GetMapping("/getById/{id}")
+    public ResponseEntity<ApiResponse<User>> getById(@PathVariable String id) {
         try {
-            ApiResponse<User> response = service.update(user);
+            ApiResponse<User> response = service.findById(id);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
             return new ResponseEntity<>(
                     response,
@@ -57,5 +57,42 @@ public class UserController {
             );
         }
     }
+
+    @GetMapping("/getByEmail/{email}")
+    public ResponseEntity<ApiResponse<User>> getByEmail(@PathVariable String email) {
+        try {
+            ApiResponse<User> response = service.findByEmailAll(email);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+
+//    @PutMapping("/update")
+//    public ResponseEntity<ApiResponse<User>> update(@Validated @RequestBody UserDto user) {
+//        try {
+//            ApiResponse<User> response = service.update(user);
+//            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+//            return new ResponseEntity<>(
+//                    response,
+//                    statusCode
+//            );
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(
+//                    new ApiResponse<>(
+//                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+//                    HttpStatus.INTERNAL_SERVER_ERROR
+//            );
+//        }
+//    }
 
 }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.cleancheck.controller.record.dto.RecordDto;
 import utez.edu.mx.cleancheck.model.record.RecordRepository;
-import utez.edu.mx.cleancheck.model.room.Room;
 import utez.edu.mx.cleancheck.model.room.RoomRepository;
 import utez.edu.mx.cleancheck.model.room.RoomState;
 import utez.edu.mx.cleancheck.model.user.UserRepository;
@@ -26,7 +25,6 @@ public class RecordService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
 
-    //create
     @Transactional(rollbackFor = Exception.class)
     public ApiResponse<Record> insert(RecordDto recordDto) {
         if (!roomRepository.existsById(recordDto.getRoom().getId())) {

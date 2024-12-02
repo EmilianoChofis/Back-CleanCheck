@@ -9,6 +9,5 @@ public interface FloorRepository extends JpaRepository<Floor, String> {
 
     Optional<Floor> findByName(String name);
     Optional<Floor> findByNameIgnoreCase(String name);
-
     List<Floor> findByBuildingId(String buildingId);
 }
