@@ -21,7 +21,6 @@ import java.util.UUID;
 public class BuildingService {
 
     private final BuildingRepository repository;
-    private final BuildingRepository buildingRepository;
 
     @Transactional(rollbackFor = {SQLException.class})
     public ApiResponse<BuildingCreatedDto> create (BuildingDto building) {
@@ -35,7 +34,7 @@ public class BuildingService {
         String id = UUID.randomUUID().toString();
         newBuilding.setId(id);
         newBuilding.setName(building.getName());
-        newBuilding.setNumber(buildingRepository.findNextBuildingNumber());
+        newBuilding.setNumber(repository.findNextBuildingNumber());
         Building saveBuilding = repository.save(newBuilding);
         BuildingCreatedDto buildingCreated = new BuildingCreatedDto();
         BeanUtils.copyProperties(saveBuilding, buildingCreated);
