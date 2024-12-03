@@ -1,12 +1,14 @@
 package utez.edu.mx.cleancheck.controller.room;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.cleancheck.controller.room.dto.RoomDto;
+import utez.edu.mx.cleancheck.model.building.Building;
 import utez.edu.mx.cleancheck.model.room.Room;
 import utez.edu.mx.cleancheck.service.room.RoomService;
 import utez.edu.mx.cleancheck.utils.ApiResponse;
@@ -131,9 +133,9 @@ public class RoomController {
     }
 
     @PostMapping("/getByStatusAndBuilding")
-    public ResponseEntity<ApiResponse<List<Room>>> findByStatusAndBuilding(@Validated({RoomDto.FindByStatusAndBuilding.class}) @RequestBody RoomDto room) {
+    public ResponseEntity<ApiResponse<Building>> findByStatusAndBuilding(@Validated({RoomDto.FindByStatusAndBuilding.class}) @RequestBody RoomDto room) {
         try {
-            ApiResponse<List<Room>> response = service.findByStatusAndBuilding(room);
+            ApiResponse<Building> response = service.findByStatusAndBuilding(room);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
             return new ResponseEntity<>(
                     response,

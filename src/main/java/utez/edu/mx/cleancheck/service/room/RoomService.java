@@ -103,19 +103,21 @@ public class RoomService {
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<List<Room>> findByStatusAndBuilding(RoomDto dto) {
+    public ApiResponse<Building> findByStatusAndBuilding(RoomDto dto) {
 
-        Optional<Building> building = buildingRepository.findById(dto.getBuildingId());
-        if (building.isEmpty()) {
+        Optional<Building> optbuilding = buildingRepository.findById(dto.getBuildingId());
+        if (optbuilding.isEmpty()) {
             return new ApiResponse<>(
                     null, true, 400, "El edificio ingresado no esta registrado"
             );
         }
 
-        List<Room> rooms;
+        //List<Room> rooms;
+        Building building;
 
         if (dto.getStatus() == null) {
-            rooms = roomRepository.findByBuildingId(building.get().getId());
+            //rooms = roomRepository.findByBuildingId(building.get().getId());
+            building = optbuilding.get();
         } else {
 
             boolean isValid = isValidState(dto.getStatus());
@@ -125,12 +127,25 @@ public class RoomService {
                         null, true, 400, "El estado de la habitacion ingresado no es valido"
                 );
             }
+            building = optbuilding.get();
 
-            rooms = roomRepository.findByStatusAndBuilding(dto.getStatus(), building.get().getId());
+            //filter building rooms by dto.getStatus()
+            for (Floor floor : building.getFloors()) {
+                List<Integer> roomsIdToRemove = new ArrayList<>();
+                for (int i = 0; i < floor.getRooms().size(); i++) {
+                    if (!floor.getRooms().get(i).getStatus().equals(dto.getStatus())) {
+                        roomsIdToRemove.add(i);
+                    }
+                }
+                for (int i = 0; i < roomsIdToRemove.size(); i++) {
+                    floor.getRooms().remove(roomsIdToRemove.get(i).intValue());
+                }
+            }
+            //rooms = roomRepository.findByStatusAndBuilding(dto.getStatus(), optbuilding.get().getId());
         }
 
         return new ApiResponse<>(
-                rooms, false, 200, "Habitaciones encontradas"
+                building, false, 200, "Habitaciones encontradas"
         );
     }
 
