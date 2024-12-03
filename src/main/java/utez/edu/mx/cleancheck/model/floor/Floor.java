@@ -27,6 +27,7 @@ public class Floor {
 
     @ManyToOne
     @JoinColumn(name = "building_id")
+    @JsonIgnore
     private Building building;
 
     @ColumnDefault("true")
@@ -39,7 +40,6 @@ public class Floor {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<Room> rooms = new ArrayList<>();
 
 }

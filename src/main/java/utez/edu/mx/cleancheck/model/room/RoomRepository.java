@@ -16,6 +16,9 @@ public interface RoomRepository extends JpaRepository<Room, String> {
 
     List<Room> findByStatus(RoomState status);
 
+    @Query("SELECT r FROM Room r WHERE r.status = ?1 AND r.floor.building.id = ?2")
+    List<Room> findByStatusAndBuilding(RoomState status, String buildingId);
+
     @Query("SELECT r FROM Room r WHERE r.floor.building.id = ?1")
     List<Room> findByBuildingId(String buildingId);
 

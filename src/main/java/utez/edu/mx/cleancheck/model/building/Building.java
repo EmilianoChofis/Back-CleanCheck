@@ -37,6 +37,5 @@ public class Building {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<Floor> floors = new ArrayList<>();
 }

@@ -130,6 +130,24 @@ public class RoomController {
         }
     }
 
+    @PostMapping("/getByStatusAndBuilding")
+    public ResponseEntity<ApiResponse<List<Room>>> findByStatusAndBuilding(@Validated({RoomDto.FindByStatusAndBuilding.class}) @RequestBody RoomDto room) {
+        try {
+            ApiResponse<List<Room>> response = service.findByStatusAndBuilding(room);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
     @PutMapping("/update")
     public ResponseEntity<ApiResponse<Room>> update(@Validated({RoomDto.Update.class}) @RequestBody RoomDto room) {
         try {

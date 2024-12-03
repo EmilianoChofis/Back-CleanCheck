@@ -31,6 +31,7 @@ public class Room {
 
     @ManyToOne
     @JoinColumn(name = "floor_id")
+    @JsonIgnore
     private Floor floor;
 
     @OneToMany(mappedBy = "roomId", cascade = CascadeType.ALL, orphanRemoval = true)

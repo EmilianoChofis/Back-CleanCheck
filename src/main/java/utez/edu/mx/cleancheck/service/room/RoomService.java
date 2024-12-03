@@ -79,7 +79,56 @@ public class RoomService {
 
     @Transactional(readOnly = true)
     public ApiResponse<List<Room>> findByStatus(RoomDto dto) {
-        List<Room> rooms = roomRepository.findByStatus(dto.getStatus());
+
+        List<Room> rooms;
+
+        if (dto.getStatus() == null) {
+            rooms = roomRepository.findAll();
+        } else {
+
+            boolean isValid = isValidState(dto.getStatus());
+
+            if (!isValid) {
+                return new ApiResponse<>(
+                        null, true, 400, "El estado de la habitacion ingresado no es valido"
+                );
+            }
+
+            rooms = roomRepository.findByStatus(dto.getStatus());
+        }
+
+        return new ApiResponse<>(
+                rooms, false, 200, "Habitaciones encontradas"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Room>> findByStatusAndBuilding(RoomDto dto) {
+
+        Optional<Building> building = buildingRepository.findById(dto.getBuildingId());
+        if (building.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "El edificio ingresado no esta registrado"
+            );
+        }
+
+        List<Room> rooms;
+
+        if (dto.getStatus() == null) {
+            rooms = roomRepository.findByBuildingId(building.get().getId());
+        } else {
+
+            boolean isValid = isValidState(dto.getStatus());
+
+            if (!isValid) {
+                return new ApiResponse<>(
+                        null, true, 400, "El estado de la habitacion ingresado no es valido"
+                );
+            }
+
+            rooms = roomRepository.findByStatusAndBuilding(dto.getStatus(), building.get().getId());
+        }
+
         return new ApiResponse<>(
                 rooms, false, 200, "Habitaciones encontradas"
         );
@@ -151,7 +200,7 @@ public class RoomService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<Room> changeState(RoomDto room){
+    public ApiResponse<Room> changeState(RoomDto room) {
         Room foundRoom = roomRepository.findById(room.getId()).orElse(null);
         if (foundRoom == null) {
             return new ApiResponse<>(
@@ -237,6 +286,15 @@ public class RoomService {
         return new ApiResponse<>(
                 saveRoom, false, 200, "Estado de la habitacion actualizado correctamente"
         );
+    }
+
+    private boolean isValidState(RoomState state) {
+        for (RoomState s : RoomState.values()) {
+            if (s.equals(state)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
