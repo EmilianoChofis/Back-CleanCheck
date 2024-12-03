@@ -131,15 +131,7 @@ public class RoomService {
 
             //filter building rooms by dto.getStatus()
             for (Floor floor : building.getFloors()) {
-                List<Integer> roomsIdToRemove = new ArrayList<>();
-                for (int i = 0; i < floor.getRooms().size(); i++) {
-                    if (!floor.getRooms().get(i).getStatus().equals(dto.getStatus())) {
-                        roomsIdToRemove.add(i);
-                    }
-                }
-                for (int i = 0; i < roomsIdToRemove.size(); i++) {
-                    floor.getRooms().remove(roomsIdToRemove.get(i).intValue());
-                }
+                floor.getRooms().removeIf(room -> !room.getStatus().equals(dto.getStatus()));
             }
             //rooms = roomRepository.findByStatusAndBuilding(dto.getStatus(), optbuilding.get().getId());
         }
