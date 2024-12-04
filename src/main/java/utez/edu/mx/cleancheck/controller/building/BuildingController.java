@@ -132,7 +132,7 @@ public class BuildingController {
         }
     }
 
-    @PutMapping("/changeStatus")
+    @PutMapping("/changeStatus/{id}")
     public ResponseEntity<ApiResponse<Building>> changeStatus(@PathVariable("id") String id) {
         try {
             ApiResponse<Building> response = service.changeStatus(id);
