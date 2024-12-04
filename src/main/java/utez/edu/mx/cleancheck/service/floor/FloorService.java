@@ -162,6 +162,12 @@ public class FloorService {
                         null, true, 400, "El edificio ingresado no esta registrado"
                 );
             }
+            Floor foundFloor = floorRepository.findByNameIgnoreCase(f.getName()).orElse(null);
+            if (foundFloor != null) {
+                return new ApiResponse<>(
+                        null, true, 400, "El piso ingresado ya esta registrado"
+                );
+            }
             Floor newFloor = new Floor();
             String id = UUID.randomUUID().toString();
             newFloor.setId(id);
