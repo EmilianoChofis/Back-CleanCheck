@@ -18,5 +18,7 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
     @Query("SELECT b FROM Building b WHERE b.status = true ORDER BY b.number ASC")
     List<Building> findAllActiveBuildings();
 
+    Boolean existsByName(String name);
+
 
 }
