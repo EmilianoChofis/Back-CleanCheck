@@ -1,6 +1,7 @@
 package utez.edu.mx.cleancheck.controller.building.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -10,6 +11,6 @@ public class BuildingCreatedDto {
     String id;
     @NotBlank(message = "El nombre no puede estar vacio")
     String name;
-    @NotBlank(message = "El numero no puede estar vacio")
+    @NotNull(message = "El numero no puede estar vacio")
     int number;
 }
