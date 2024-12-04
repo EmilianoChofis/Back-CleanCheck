@@ -159,7 +159,7 @@ public class FloorController {
     }
 
     @PostMapping("/create-list")
-    public ResponseEntity<ApiResponse<List<Floor>>> createList(@RequestBody List<Floor> floors) {
+    public ResponseEntity<ApiResponse<List<Floor>>> createList(@RequestBody List<FloorDto> floors) {
         try {
             ApiResponse<List<Floor>> response = service.createList(floors);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;

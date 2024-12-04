@@ -153,10 +153,10 @@ public class FloorService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<List<Floor>> createList(List<Floor> floors) {
+    public ApiResponse<List<Floor>> createList(List<FloorDto> floors) {
         List<Floor> registerFloors = new ArrayList<>();
-        for (Floor f : floors) {
-            Building foundBuilding = buildingRepository.findById(f.getBuilding().getId()).orElse(null);
+        for (FloorDto f : floors) {
+            Building foundBuilding = buildingRepository.findById(f.getBuildingId()).orElse(null);
             if (foundBuilding == null) {
                 return new ApiResponse<>(
                         null, true, 400, "El edificio ingresado no esta registrado"
