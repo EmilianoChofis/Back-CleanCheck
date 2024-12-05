@@ -32,16 +32,17 @@ public class RoomService {
     @Transactional(rollbackFor = {SQLException.class})
     public ApiResponse<Room> create(RoomDto room) {
         Room foundRoom = roomRepository.findByName(room.getName()).orElse(null);
-        if (foundRoom != null) {
-            return new ApiResponse<>(
-                    foundRoom, true, 400, "La habitacion ingresada ya esta registrada"
-            );
-        }
         Floor foundFloor = floorRepository.findById(room.getFloorId()).orElse(null);
         if (foundFloor == null) {
             return new ApiResponse<>(
                     null, true, 400, "El piso ingresado no esta registrado"
             );
+        }else {
+            if (foundRoom != null || foundFloor.equals(foundRoom.getFloor())) {
+                return new ApiResponse<>(
+                        foundRoom, true, 400, "Ya existe una habitacion con ese nombre en el mismo piso"
+                );
+            }
         }
         Room newRoom = new Room();
         String id = UUID.randomUUID().toString();

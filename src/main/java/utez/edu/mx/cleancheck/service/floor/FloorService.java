@@ -31,17 +31,17 @@ public class FloorService {
     public ApiResponse<FloorCreatedDto> create(FloorDto floor) {
 
         Floor foundFloor = floorRepository.findByNameIgnoreCase(floor.getName()).orElse(null);
-        if (foundFloor != null) {
-            return new ApiResponse<>(
-                    null, true, 400, "El piso ingresado ya esta registrado"
-            );
-        }
-
         Building foundBuilding = buildingRepository.findById(floor.getBuildingId()).orElse(null);
         if (foundBuilding == null) {
             return new ApiResponse<>(
                     null, true, 400, "El edificio ingresado no esta registrado"
             );
+        }else {
+            if (foundFloor != null || foundBuilding.equals(foundFloor.getBuilding())) {
+                return new ApiResponse<>(
+                        null, true, 400, "El piso ingresado ya esta registrado en ese edificio"
+                );
+            }
         }
         Floor newFloor = new Floor();
         String id = UUID.randomUUID().toString();
