@@ -23,36 +23,36 @@ import java.util.UUID;
 
 public class ReportService {
 
-//    private final ReportRepository reportRepository;
-//    private final ImageService imageService;
-//    private final UserRepository userRepository;
-//    private final RoomRepository roomRepository;
-//
-//    public ApiResponse<Report> create (ReportDto report) {
-//        User foundUser = userRepository.findById(report.getUserId()).orElse(null);
-//        if (foundUser == null) {
-//            return new ApiResponse<>(
-//                    null, true, 404, "El usuario no existe"
-//            );
-//        }
-//        Room foundRoom = roomRepository.findById(report.getRoomId()).orElse(null);
-//        if (foundRoom == null) {
-//            return new ApiResponse<>(
-//                    null, true, 404, "La habitación no existe"
-//            );
-//        }
-//        Report newReport = new Report();
-//        String newId = UUID.randomUUID().toString();
-//        newReport.setId(newId);
-//        newReport.setDescription(report.getDescription());
-//        newReport.setUserId(foundUser);
-//        newReport.setRoomId(foundRoom);
-//        newReport.setStatus(ReportState.PENDING);
-//        Report saveReport = reportRepository.save(newReport);
-//        List<Image> images = imageService.uploadImages(report.getFiles(), newReport);
-//        saveReport.setImages(images);
-//        return new ApiResponse<>(
-//                saveReport, false, HttpStatus.OK.value(), "Reporte registrado correctamente"
-//        );
-//    }
+    private final ReportRepository reportRepository;
+    private final ImageService imageService;
+    private final UserRepository userRepository;
+    private final RoomRepository roomRepository;
+
+    public ApiResponse<Report> create (ReportDto report) {
+        User foundUser = userRepository.findById(report.getUserId()).orElse(null);
+        if (foundUser == null) {
+            return new ApiResponse<>(
+                    null, true, 404, "El usuario no existe"
+            );
+        }
+        Room foundRoom = roomRepository.findById(report.getRoomId()).orElse(null);
+        if (foundRoom == null) {
+            return new ApiResponse<>(
+                    null, true, 404, "La habitación no existe"
+            );
+        }
+        Report newReport = new Report();
+        String newId = UUID.randomUUID().toString();
+        newReport.setId(newId);
+        newReport.setDescription(report.getDescription());
+        newReport.setUserId(foundUser);
+        newReport.setRoomId(foundRoom);
+        newReport.setStatus(ReportState.PENDING);
+        Report saveReport = reportRepository.save(newReport);
+        List<Image> images = imageService.uploadImages(report.getFiles(), newReport);
+        saveReport.setImages(images);
+        return new ApiResponse<>(
+                saveReport, false, HttpStatus.OK.value(), "Reporte registrado correctamente"
+        );
+    }
 }
