@@ -3,6 +3,7 @@ package utez.edu.mx.cleancheck.service.room;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utez.edu.mx.cleancheck.controller.room.dto.RoomCreatedDto;
 import utez.edu.mx.cleancheck.controller.room.dto.RoomDto;
 import utez.edu.mx.cleancheck.model.building.Building;
 import utez.edu.mx.cleancheck.model.building.BuildingRepository;
@@ -239,10 +240,10 @@ public class RoomService {
 
     @Transactional(rollbackFor = {SQLException.class})
     public ApiResponse<List<Room>> createList(RoomDto room) {
-        List<Room> rooms = room.getRooms();
+        List<RoomCreatedDto> rooms = room.getRooms();
         List<Room> registeredRooms = new ArrayList<>();
-        for (Room r : rooms) {
-            Floor foundFloor = floorRepository.findById(r.getFloor().getId()).orElse(null);
+        for (RoomCreatedDto r : rooms) {
+            Floor foundFloor = floorRepository.findById(r.getFloorId()).orElse(null);
             if (foundFloor == null) {
                 return new ApiResponse<>(
                         null, true, 400, "El piso ingresado no esta registrado"

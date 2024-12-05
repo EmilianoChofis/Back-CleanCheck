@@ -22,8 +22,8 @@ public class RoomDto {
     private RoomState newStatus;
     @NotNull(groups = {FindByStatus.class}, message = "El estado de la habitación es requerido")
     private RoomState status;
-    @NotBlank(groups = {CreateList.class}, message = "La lista de habitaciones es requerida")
-    List<Room> rooms;
+    @NotNull(groups = {CreateList.class}, message = "La lista de habitaciones es requerida")
+    List<RoomCreatedDto> rooms;
     @NotNull(groups = {FindByBuilding.class, FindByStatusAndBuilding.class}, message = "El id del edificio es requerido")
     private String buildingId;
 
