@@ -140,7 +140,7 @@ public class FloorController {
     }
 
     @Transactional(readOnly = true)
-    @PostMapping("/getByBulding/{id}")
+    @GetMapping("/getByBuilding/{id}")
     public ResponseEntity<ApiResponse<List<Floor>>> getByBuilding(@PathVariable("id") String id) {
         try {
             ApiResponse<List<Floor>> response = service.findByBuildingId(id);
