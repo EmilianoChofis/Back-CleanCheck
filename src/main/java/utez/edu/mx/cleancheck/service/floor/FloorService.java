@@ -37,7 +37,7 @@ public class FloorService {
                     null, true, 400, "El edificio ingresado no esta registrado"
             );
         }else {
-            if (foundFloor != null || foundBuilding.equals(foundFloor.getBuilding())) {
+            if (foundFloor != null && foundBuilding.equals(foundFloor.getBuilding())) {
                 return new ApiResponse<>(
                         null, true, 400, "El piso ingresado ya esta registrado en ese edificio"
                 );

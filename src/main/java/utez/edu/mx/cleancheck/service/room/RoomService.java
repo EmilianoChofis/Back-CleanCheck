@@ -38,7 +38,7 @@ public class RoomService {
                     null, true, 400, "El piso ingresado no esta registrado"
             );
         }else {
-            if (foundRoom != null || foundFloor.equals(foundRoom.getFloor())) {
+            if (foundRoom != null && foundFloor.equals(foundRoom.getFloor())) {
                 return new ApiResponse<>(
                         foundRoom, true, 400, "Ya existe una habitacion con ese nombre en el mismo piso"
                 );
