@@ -80,4 +80,45 @@ public class ReportService {
                 report, false, HttpStatus.OK.value(), "Reporte encontrado"
         );
     }
+
+    public ApiResponse<Report> UpdateStatusIn (String id) {
+        Report report = reportRepository.findById(id).orElse(null);
+        if (report == null) {
+            return new ApiResponse<>(
+                    null, true, 404, "El reporte no existe"
+            );
+        }
+        report.setStatus(ReportState.IN_PROGRESS);
+        Report updatedReport = reportRepository.save(report);
+        return new ApiResponse<>(
+                updatedReport, false, HttpStatus.OK.value(), "Reporte actualizado correctamente"
+        );
+    }
+
+    public ApiResponse<Report> UpdateStatusFinish (String id) {
+        Report report = reportRepository.findById(id).orElse(null);
+        if (report == null) {
+            return new ApiResponse<>(
+                    null, true, 404, "El reporte no existe"
+            );
+        }
+        report.setStatus(ReportState.FINISHED);
+        Report updatedReport = reportRepository.save(report);
+        return new ApiResponse<>(
+                updatedReport, false, HttpStatus.OK.value(), "Reporte actualizado correctamente"
+        );
+    }
+
+    public ApiResponse<Report> delete (String id) {
+        Report report = reportRepository.findById(id).orElse(null);
+        if (report == null) {
+            return new ApiResponse<>(
+                    null, true, 404, "El reporte no existe"
+            );
+        }
+        reportRepository.delete(report);
+        return new ApiResponse<>(
+                report, false, HttpStatus.OK.value(), "Reporte eliminado correctamente"
+        );
+    }
 }
