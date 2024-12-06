@@ -179,4 +179,21 @@ public class UserService {
         );
     }
 
+    public ApiResponse<List<User>> findByRole(String role) {
+        Optional<Role> roleobj= roleRepository.findByName(role);
+        if (roleobj.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "El rol ingresado no existe"
+            );
+        }
+        List<User> users = repository.findByRole(roleobj.get());
+        if (users.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No se encontraron usuarios con el rol ingresado"
+            );
+        }
+        return new ApiResponse<>(
+                users, false, 200, "Usuarios encontrados"
+        );
+    }
 }

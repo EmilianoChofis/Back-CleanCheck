@@ -75,6 +75,24 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getByRole/{role}")
+    public ResponseEntity<ApiResponse<List<User>>> getByRole(@PathVariable String role) {
+        try {
+            ApiResponse<List<User>> response = service.findByRole(role);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
 
     @PutMapping("/update")
     public ResponseEntity<ApiResponse<User>> update(@Validated @RequestBody UpdateUserDto user) {
