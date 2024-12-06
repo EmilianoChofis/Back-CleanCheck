@@ -55,4 +55,29 @@ public class ReportService {
                 saveReport, false, HttpStatus.OK.value(), "Reporte registrado correctamente"
         );
     }
+
+
+    public ApiResponse<List<Report>> getAll() {
+        List<Report> reports = reportRepository.findAll();
+        if (reports.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 404, "No hay reportes registrados"
+            );
+        }
+        return new ApiResponse<>(
+                reports, false, HttpStatus.OK.value(), "Reportes encontrados"
+        );
+    }
+
+    public ApiResponse<Report> getById(String id) {
+        Report report = reportRepository.findById(id).orElse(null);
+        if (report == null) {
+            return new ApiResponse<>(
+                    null, true, 404, "El reporte no existe"
+            );
+        }
+        return new ApiResponse<>(
+                report, false, HttpStatus.OK.value(), "Reporte encontrado"
+        );
+    }
 }

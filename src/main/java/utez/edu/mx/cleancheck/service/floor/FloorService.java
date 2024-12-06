@@ -74,7 +74,7 @@ public class FloorService {
         Floor foundFloor = floorRepository.findById(id).orElse(null);
         if (foundFloor == null) {
             return new ApiResponse<>(
-                    foundFloor, true, 400, "El piso ingresado no esta registrado"
+                    null, true, 400, "El piso ingresado no esta registrado"
             );
         }
 
@@ -88,7 +88,7 @@ public class FloorService {
         Floor foundFloor = floorRepository.findByName(name).orElse(null);
         if (foundFloor == null) {
             return new ApiResponse<>(
-                    foundFloor, true, 400, "El piso ingresado no esta registrado"
+                    null, true, 400, "El piso ingresado no esta registrado"
             );
         }
         return new ApiResponse<>(
@@ -102,7 +102,7 @@ public class FloorService {
         Floor foundFloor = floorRepository.findById(floor.getId()).orElse(null);
         if (foundFloor == null) {
             return new ApiResponse<>(
-                    foundFloor, true, 400, "El piso ingresado no esta registrado"
+                    null, true, 400, "El piso ingresado no esta registrado"
             );
         }
 
@@ -126,7 +126,7 @@ public class FloorService {
         Floor foundFloor = floorRepository.findByName(floor.getName()).orElse(null);
         if (foundFloor == null) {
             return new ApiResponse<>(
-                    foundFloor, true, 400, "El piso ingresado no esta registrado"
+                    null, true, 400, "El piso ingresado no esta registrado"
             );
         }
         floorRepository.delete(foundFloor);
@@ -186,7 +186,7 @@ public class FloorService {
         Floor foundFloor = floorRepository.findById(id).orElse(null);
         if (foundFloor == null) {
             return new ApiResponse<>(
-                    foundFloor, true, 400, "El piso ingresado no esta registrado"
+                    null, true, 400, "El piso ingresado no esta registrado"
             );
         }
         foundFloor.setStatus(!foundFloor.getStatus());
