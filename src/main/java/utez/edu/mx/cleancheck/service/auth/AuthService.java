@@ -161,4 +161,21 @@ public class AuthService {
                 saveUser, false, HttpStatus.OK.value(), "Gerente registrado correctamente"
         );
     }
+
+    public ApiResponse<AuthCreatedDto> createUserGeneral(UserDto user, String role) {
+        Role roleObj = roleRepository.findByName(role).orElse(null);
+        if(roleObj == null)
+            return new ApiResponse<>(
+                    null, true, HttpStatus.BAD_REQUEST.value(), "Rol no encontrado"
+            );
+        User foundUser = userRepository.findByEmail(user.getEmail()).orElse(null);
+        if (foundUser != null)
+            return new ApiResponse<>(
+                    null, true, HttpStatus.BAD_REQUEST.value(), "Usuario ya registrado"
+            );
+        AuthCreatedDto saveUser = userCreate(user, roleObj);
+        return new ApiResponse<>(
+                saveUser, false, HttpStatus.OK.value(), "Usuario registrado correctamente"
+        );
+    }
 }

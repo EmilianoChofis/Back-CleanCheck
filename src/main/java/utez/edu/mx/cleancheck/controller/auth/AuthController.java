@@ -39,6 +39,24 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/createUser/{role}")
+    public ResponseEntity<ApiResponse<AuthCreatedDto>> createUser(@Valid @RequestBody UserDto user, @PathVariable String role) {
+        try {
+            ApiResponse<AuthCreatedDto> response = service.createUserGeneral(user,role);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
     @PostMapping("/createReceptionist")
     public ResponseEntity<ApiResponse<AuthCreatedDto>> createReceptionist(@Valid @RequestBody UserDto user) {
         try {
