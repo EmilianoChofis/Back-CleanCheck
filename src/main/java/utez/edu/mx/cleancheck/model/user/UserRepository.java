@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, String> {
 
+    List<User> findByStatus(Boolean status);
     Optional<User> findByEmail (String email);
 
     @Query(value = "SELECT COUNT(id) FROM users", nativeQuery = true)

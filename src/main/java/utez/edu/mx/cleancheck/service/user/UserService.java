@@ -196,4 +196,17 @@ public class UserService {
                 users, false, 200, "Usuarios encontrados"
         );
     }
+
+    //get usuarios inactivos status=false
+    public ApiResponse<List<User>> getInactiveUsers() {
+        List<User> users = repository.findByStatus(false);
+        if (users.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No se encontraron usuarios inactivos"
+            );
+        }
+        return new ApiResponse<>(
+                users, false, 200, "Usuarios inactivos encontrados"
+        );
+    }
 }

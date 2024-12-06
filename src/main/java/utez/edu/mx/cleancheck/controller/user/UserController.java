@@ -111,5 +111,41 @@ public class UserController {
             );
         }
     }
+    @PutMapping("/updateStatus/{id}")
+    public ResponseEntity<ApiResponse<User>> updateStatus(@PathVariable String id) {
+        try {
+            ApiResponse<User> response = service.changeStatus(id);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping("/getInactiveUsers")
+    public ResponseEntity<ApiResponse<List<User>>> getInactiveUsers() {
+        try {
+            ApiResponse<List<User>> response = service.getInactiveUsers();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
 
 }
