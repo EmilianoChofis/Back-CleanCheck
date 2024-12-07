@@ -31,8 +31,7 @@ public class Report {
     @Enumerated(EnumType.STRING)
     private ReportState status;
 
-    @OneToMany(mappedBy = "reportId", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @OneToMany(mappedBy = "reportId", cascade = CascadeType.ALL, orphanRemoval = true) 
     private List<Image> images = new ArrayList<>();
 
     @ManyToOne
