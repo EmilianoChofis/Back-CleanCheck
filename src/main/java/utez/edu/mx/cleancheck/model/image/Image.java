@@ -1,5 +1,6 @@
 package utez.edu.mx.cleancheck.model.image;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class Image {
     private String url;
 
     @ManyToOne
+    @JsonIgnoreProperties("images")
     @JoinColumn(name = "report_id")
-    private Report reportId;
+    private Report report;
 }

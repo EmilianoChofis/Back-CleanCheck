@@ -27,6 +27,8 @@ public class SecurityConfig {
 
     private final String[] whiteList = {
             "/api-clean/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
     };
 
     @Bean

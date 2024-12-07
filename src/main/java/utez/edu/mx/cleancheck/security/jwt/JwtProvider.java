@@ -39,8 +39,8 @@ public class JwtProvider {
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, User user) {
         extraClaims.put("id", user.getId());
-        extraClaims.put("email", user.getName());
         extraClaims.put("role", user.getRole().getName());
+        extraClaims.put("email", user.getEmail());
         return Jwts
                 .builder()
                 .claims(extraClaims)

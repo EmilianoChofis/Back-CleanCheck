@@ -45,8 +45,8 @@ public class ReportService {
         String newId = UUID.randomUUID().toString();
         newReport.setId(newId);
         newReport.setDescription(report.getDescription());
-        newReport.setUserId(foundUser);
-        newReport.setRoomId(foundRoom);
+        newReport.setUser(foundUser);
+        newReport.setRoom(foundRoom);
         newReport.setStatus(ReportState.PENDING);
         Report saveReport = reportRepository.save(newReport);
         List<Image> images = imageService.uploadImages(report.getFiles(), newReport);

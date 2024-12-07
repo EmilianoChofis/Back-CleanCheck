@@ -1,7 +1,7 @@
 package utez.edu.mx.cleancheck.model.floor;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ public class Floor {
 
     @ManyToOne
     @JoinColumn(name = "building_id")
-    @JsonIgnore
+    @JsonIgnoreProperties("floors")
     private Building building;
 
     @ColumnDefault("true")
@@ -40,6 +40,7 @@ public class Floor {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("floor")
     private List<Room> rooms = new ArrayList<>();
 
 }

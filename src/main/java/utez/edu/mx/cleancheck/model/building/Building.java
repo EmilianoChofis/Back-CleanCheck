@@ -1,7 +1,7 @@
 package utez.edu.mx.cleancheck.model.building;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,5 +37,6 @@ public class Building {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("building")
     private List<Floor> floors = new ArrayList<>();
 }

@@ -55,7 +55,7 @@ public class ImageService {
                 Image image = new Image();
                 image.setId(UUID.randomUUID().toString());
                 image.setUrl(key);
-                image.setReportId(report);
+                image.setReport(report);
                 return imageRepository.save(image);
             } catch (IOException e) {
                 throw new RuntimeException("Error en la subida de la imagen al S3", e);
