@@ -1,6 +1,7 @@
 package utez.edu.mx.cleancheck.model.record;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,12 +32,12 @@ public class Record {
     private RoomState newState;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonIgnoreProperties({"records", "reports"})
     @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonIgnoreProperties({"records", "reports"})
     @JoinColumn(name = "room_id")
     private Room room;
 }

@@ -37,11 +37,11 @@ public class Report {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties("reports")
+    @JsonIgnoreProperties({"reports", "records"})
     private User user;
 
     @ManyToOne
-    @JsonIgnoreProperties("reports")
+    @JsonIgnoreProperties({"reports", "records"})
     @JoinColumn(name = "room_id")
     private Room room;
 
