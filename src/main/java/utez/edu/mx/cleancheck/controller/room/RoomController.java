@@ -1,10 +1,8 @@
 package utez.edu.mx.cleancheck.controller.room;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.cleancheck.controller.room.dto.RoomDto;
@@ -15,7 +13,7 @@ import utez.edu.mx.cleancheck.utils.ApiResponse;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api-clean/room")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
