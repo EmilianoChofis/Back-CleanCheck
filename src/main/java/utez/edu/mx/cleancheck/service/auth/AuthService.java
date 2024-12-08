@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import utez.edu.mx.cleancheck.controller.auth.dto.AuthCreatedDto;
 import utez.edu.mx.cleancheck.controller.auth.dto.SignDto;
 import utez.edu.mx.cleancheck.controller.auth.dto.SignedDto;
 import utez.edu.mx.cleancheck.controller.user.dto.UserDto;
@@ -52,17 +51,14 @@ public class AuthService {
     @Value("${manager.name}")
     private String managerName;
 
-    private AuthCreatedDto userCreate(UserDto user, Role foundRole) {
+    private User userCreate(UserDto user, Role foundRole) {
         User newUser = new User();
         String idUser = UUID.randomUUID().toString();
         newUser.setId(idUser);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         newUser.setRole(foundRole);
         BeanUtils.copyProperties(user, newUser);
-        userRepository.save(newUser);
-        AuthCreatedDto userCreated = new AuthCreatedDto();
-        BeanUtils.copyProperties(newUser, userCreated);
-        return userCreated;
+        return userRepository.save(newUser);
     }
 
 
@@ -105,7 +101,7 @@ public class AuthService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<AuthCreatedDto> createReceptionist(UserDto user) {
+    public ApiResponse<User> createReceptionist(UserDto user) {
         Role clientRole = roleRepository.findByName(receptionistName).orElse(null);
         if (clientRole == null)
             return new ApiResponse<>(
@@ -117,14 +113,14 @@ public class AuthService {
                     null, true, HttpStatus.BAD_REQUEST.value(), "Recepcionista ya registrado"
             );
 
-        AuthCreatedDto saveUser = userCreate(user, clientRole);
+        User saveUser = userCreate(user, clientRole);
         return new ApiResponse<>(
                 saveUser, false, HttpStatus.OK.value(), "Receptionista registrado correctamente"
         );
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<AuthCreatedDto> createMaid(UserDto user) {
+    public ApiResponse<User> createMaid(UserDto user) {
         Role clientRole = roleRepository.findByName(maidName).orElse(null);
         if (clientRole == null)
             return new ApiResponse<>(
@@ -136,7 +132,7 @@ public class AuthService {
                     null, true, HttpStatus.BAD_REQUEST.value(), "Mucama ya registrado"
             );
 
-        AuthCreatedDto saveUser = userCreate(user, clientRole);
+        User saveUser = userCreate(user, clientRole);
         return new ApiResponse<>(
                 saveUser, false, HttpStatus.OK.value(), "Mucama registrado correctamente"
         );
@@ -144,7 +140,7 @@ public class AuthService {
 
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<AuthCreatedDto> createManager(UserDto user) {
+    public ApiResponse<User> createManager(UserDto user) {
         Role clientRole = roleRepository.findByName(managerName).orElse(null);
         if (clientRole == null)
             return new ApiResponse<>(
@@ -156,13 +152,13 @@ public class AuthService {
                     null, true, HttpStatus.BAD_REQUEST.value(), "Gerente ya registrado"
             );
 
-        AuthCreatedDto saveUser = userCreate(user, clientRole);
+        User saveUser = userCreate(user, clientRole);
         return new ApiResponse<>(
                 saveUser, false, HttpStatus.OK.value(), "Gerente registrado correctamente"
         );
     }
 
-    public ApiResponse<AuthCreatedDto> createUserGeneral(UserDto user, String role) {
+    public ApiResponse<User> createUserGeneral(UserDto user, String role) {
         Role roleObj = roleRepository.findByName(role).orElse(null);
         if(roleObj == null)
             return new ApiResponse<>(
@@ -173,7 +169,7 @@ public class AuthService {
             return new ApiResponse<>(
                     null, true, HttpStatus.BAD_REQUEST.value(), "Usuario ya registrado"
             );
-        AuthCreatedDto saveUser = userCreate(user, roleObj);
+        User saveUser = userCreate(user, roleObj);
         return new ApiResponse<>(
                 saveUser, false, HttpStatus.OK.value(), "Usuario registrado correctamente"
         );

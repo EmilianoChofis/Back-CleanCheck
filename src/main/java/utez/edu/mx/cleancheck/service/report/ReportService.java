@@ -15,6 +15,7 @@ import utez.edu.mx.cleancheck.model.user.UserRepository;
 import utez.edu.mx.cleancheck.service.image.ImageService;
 import utez.edu.mx.cleancheck.utils.ApiResponse;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,6 +60,16 @@ public class ReportService {
 
     public ApiResponse<List<Report>> getAll() {
         List<Report> reports = reportRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+        for (Report report : reports) {
+            List<Image> images = report.getImages();
+            for (Image image : images) {
+                if (image.getFirmedAt().isBefore(now)) {
+                    image.setFirmedAt(now);
+                    image.setUrl(imageService.getPresignedUrl(image.getKey()));
+                }
+            }
+        }
         if (reports.isEmpty()) {
             return new ApiResponse<>(
                     null, true, 404, "No hay reportes registrados"

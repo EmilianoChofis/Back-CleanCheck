@@ -52,9 +52,14 @@ public class ImageService {
                         .contentType(metadata)
                         .build();
                 s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, decodedBytes.length));
+                String url = s3Presigner.presignGetObject(builder -> builder
+                        .getObjectRequest(r -> r.bucket(bucketName).key(key))
+                        .signatureDuration(java.time.Duration.ofSeconds(15))
+                ).url().toString();
                 Image image = new Image();
                 image.setId(UUID.randomUUID().toString());
-                image.setUrl(key);
+                image.setKey(key);
+                image.setUrl(url);
                 image.setReport(report);
                 return imageRepository.save(image);
             } catch (IOException e) {
@@ -63,16 +68,14 @@ public class ImageService {
         }).collect(Collectors.toList());
     }
 
-    public List<String> getPresidedUrl(List<String> keys) {
-        return keys.stream().map(key -> {
-            try {
-                return s3Presigner.presignGetObject(builder -> builder
-                                .getObjectRequest(r -> r.bucket(bucketName).key(key))
-                                .signatureDuration(java.time.Duration.ofMinutes(1)))
-                        .url().toString();
-            } catch (Exception e) {
-                throw new RuntimeException("Error al obtener la URL prefirmada para la key: " + key, e);
-            }
-        }).collect(Collectors.toList());
+    public String getPresignedUrl(String key) {
+        try {
+            return s3Presigner.presignGetObject(builder -> builder
+                            .getObjectRequest(r -> r.bucket(bucketName).key(key))
+                            .signatureDuration(java.time.Duration.ofSeconds(15)))
+                    .url().toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener la URL prefirmada para la key: " + key, e);
+        }
     }
 }

@@ -10,21 +10,21 @@ import utez.edu.mx.cleancheck.model.user.User;
 import utez.edu.mx.cleancheck.service.user.UserService;
 import utez.edu.mx.cleancheck.utils.ApiResponse;
 import utez.edu.mx.cleancheck.utils.PaginationDto;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api-clean/user")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
+
 public class UserController {
 
     private final UserService service;
 
-    @PostMapping("/getAll")
-    public ResponseEntity<ApiResponse<List<User>>> getByRoom(@Validated({PaginationDto.StateGet.class}) @RequestBody PaginationDto paginationDto) {
+    @GetMapping("/getAll")
+    public ResponseEntity<ApiResponse<List<User>>> getAll() {
         try {
-            ApiResponse<List<User>> response = service.getAllPagination(paginationDto);
+            ApiResponse<List<User>> response = service.getAll();
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
             return new ResponseEntity<>(
                     response,
@@ -39,82 +39,10 @@ public class UserController {
         }
     }
 
-    @GetMapping("/getById/{id}")
-    public ResponseEntity<ApiResponse<User>> getById(@PathVariable String id) {
+    @GetMapping("/getActiveUsers")
+    public ResponseEntity<ApiResponse<List<User>>> getActiveUsers() {
         try {
-            ApiResponse<User> response = service.findById(id);
-            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
-            return new ResponseEntity<>(
-                    response,
-                    statusCode
-            );
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ApiResponse<>(
-                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
-    @GetMapping("/getByEmail/{email}")
-    public ResponseEntity<ApiResponse<User>> getByEmail(@PathVariable String email) {
-        try {
-            ApiResponse<User> response = service.findByEmailAll(email);
-            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
-            return new ResponseEntity<>(
-                    response,
-                    statusCode
-            );
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ApiResponse<>(
-                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
-    @GetMapping("/getByRole/{role}")
-    public ResponseEntity<ApiResponse<List<User>>> getByRole(@PathVariable String role) {
-        try {
-            ApiResponse<List<User>> response = service.findByRole(role);
-            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
-            return new ResponseEntity<>(
-                    response,
-                    statusCode
-            );
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ApiResponse<>(
-                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
-
-    @PutMapping("/update")
-    public ResponseEntity<ApiResponse<User>> update(@Validated @RequestBody UpdateUserDto user) {
-        try {
-            ApiResponse<User> response = service.update(user);
-            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
-            return new ResponseEntity<>(
-                    response,
-                    statusCode
-            );
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ApiResponse<>(
-                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-    @PutMapping("/updateStatus/{id}")
-    public ResponseEntity<ApiResponse<User>> updateStatus(@PathVariable String id) {
-        try {
-            ApiResponse<User> response = service.changeStatus(id);
+            ApiResponse<List<User>> response = service.getActiveUsers();
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
             return new ResponseEntity<>(
                     response,
@@ -147,5 +75,130 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getById/{id}")
+    public ResponseEntity<ApiResponse<User>> getById(@PathVariable String id) {
+        try {
+            ApiResponse<User> response = service.getById(id);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 
+    @GetMapping("/getByEmail/{email}")
+    public ResponseEntity<ApiResponse<User>> getByEmail(@PathVariable String email) {
+        try {
+            ApiResponse<User> response = service.getByEmail(email);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping("/getByRole/{roleName}")
+    public ResponseEntity<ApiResponse<List<User>>> getByRole(@PathVariable String roleName) {
+        try {
+            ApiResponse<List<User>> response = service.getByRole(roleName);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PostMapping("/getAllPagination")
+    public ResponseEntity<ApiResponse<List<User>>> getAllPagination(@Validated({PaginationDto.StateGet.class}) @RequestBody PaginationDto paginationDto) {
+        try {
+            ApiResponse<List<User>> response = service.getAllPagination(paginationDto);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+
+    @PutMapping("/update")
+    public ResponseEntity<ApiResponse<User>> update(@Validated @RequestBody UpdateUserDto user) {
+        try {
+            ApiResponse<User> response = service.update(user);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PutMapping("/changeStatus/{id}")
+    public ResponseEntity<ApiResponse<User>> changeStatus(@PathVariable String id) {
+        try {
+            ApiResponse<User> response = service.changeStatus(id);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponse<User>> delete(@PathVariable String id) {
+        try {
+            ApiResponse<User> response = service.delete(id);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }

@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface FloorRepository extends JpaRepository<Floor, String> {
 
     Optional<Floor> findByName(String name);
-    Optional<Floor> findByNameIgnoreCase(String name);
     List<Floor> findByBuildingId(String buildingId);
+    List<Floor> findByStatus(Boolean status);
+    Boolean existsByNameAndBuildingId (String name, String buildingId);
 }

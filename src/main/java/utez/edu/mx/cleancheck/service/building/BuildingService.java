@@ -1,7 +1,6 @@
 package utez.edu.mx.cleancheck.service.building;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.cleancheck.controller.building.dto.BuildingCreatedDto;
@@ -24,7 +23,7 @@ public class BuildingService {
     private final BuildingRepository buildingRepository;
 
     @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<BuildingCreatedDto> create (BuildingDto building) {
+    public ApiResponse<Building> create(BuildingDto building) {
         Building foundBuilding = repository.findByNameIgnoreCase(building.getName()).orElse(null);
         if (foundBuilding != null) {
             return new ApiResponse<>(
@@ -35,17 +34,16 @@ public class BuildingService {
         String id = UUID.randomUUID().toString();
         newBuilding.setId(id);
         newBuilding.setName(building.getName());
+        newBuilding.setStatus(true);
         newBuilding.setNumber(buildingRepository.findNextBuildingNumber());
         Building saveBuilding = repository.save(newBuilding);
-        BuildingCreatedDto buildingCreated = new BuildingCreatedDto();
-        BeanUtils.copyProperties(saveBuilding, buildingCreated);
         return new ApiResponse<>(
-                buildingCreated, false, 200, "Edificio registrado correctamente"
+                saveBuilding, false, 200, "Edificio registrado correctamente"
         );
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<List<Building>> findAll() {
+    public ApiResponse<List<Building>> getAll() {
         List<Building> buildings = repository.findAll();
         if (buildings.isEmpty()) {
             return new ApiResponse<>(
@@ -58,7 +56,33 @@ public class BuildingService {
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<Building> findById(String id) {
+    public ApiResponse<List<Building>> getAllActive() {
+        List<Building> buildings = repository.findAllByStatus(true);
+        if (buildings.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No hay edificios activos registrados"
+            );
+        }
+        return new ApiResponse<>(
+                buildings, false, 200, "Edificios activos encontrados"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Building>> getAllInactive() {
+        List<Building> buildings = repository.findAllByStatus(false);
+        if (buildings.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No hay edificios inactivos registrados"
+            );
+        }
+        return new ApiResponse<>(
+                buildings, false, 200, "Edificios inactivos encontrados"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<Building> getById(String id) {
         Building foundBuilding = repository.findById(id).orElse(null);
         if (foundBuilding == null) {
             return new ApiResponse<>(
@@ -71,7 +95,7 @@ public class BuildingService {
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<Building> findByName(String name) {
+    public ApiResponse<Building> getByName(String name) {
         Building foundBuilding = repository.findByNameIgnoreCase(name).orElse(null);
         if (foundBuilding == null) {
             return new ApiResponse<>(
@@ -85,9 +109,8 @@ public class BuildingService {
 
     @Transactional(rollbackFor = {SQLException.class})
     public ApiResponse<Building> update(BuildingCreatedDto building) {
-
         Building updateBuilding = repository.findById(building.getId()).orElse(null);
-        if (building == null) {
+        if (updateBuilding == null) {
             return new ApiResponse<>(
                     null, true, 404, "El edificio ingresado no esta registrado"
             );
@@ -98,26 +121,9 @@ public class BuildingService {
             );
         }
         updateBuilding.setName(building.getName());
-        updateBuilding.setNumber(building.getNumber());
         Building saveBuilding = repository.save(updateBuilding);
         return new ApiResponse<>(
                 saveBuilding, false, 200, "Edificio actualizado correctamente"
-        );
-    }
-
-    @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<Building> delete(String id) {
-        Building building = repository.findById(id).orElse(null);
-
-        if (building == null) {
-            return new ApiResponse<>(
-                    null, true, 404, "El edificio ingresado no esta registrado"
-            );
-        }
-
-        repository.delete(building);
-        return new ApiResponse<>(
-                building, false, 200, "Edificio eliminado correctamente"
         );
     }
 
@@ -137,6 +143,19 @@ public class BuildingService {
         return new ApiResponse<>(
                 saveBuilding, false, 200, "Estado del edificio actualizado correctamente"
         );
+    }
 
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<Building> delete(String id) {
+        Building building = repository.findById(id).orElse(null);
+        if (building == null) {
+            return new ApiResponse<>(
+                    null, true, 404, "El edificio ingresado no esta registrado"
+            );
+        }
+        repository.delete(building);
+        return new ApiResponse<>(
+                building, false, 200, "Edificio eliminado correctamente"
+        );
     }
 }

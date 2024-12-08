@@ -28,16 +28,63 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Optional<User> findByEmail (String email) {
-        return repository.findByEmail(email);
+    public ApiResponse<List<User>> getAll() {
+        List<User> users = repository.findAll();
+        if (users.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No hay usuarios registrados"
+            );
+        }
+        return new ApiResponse<>(
+                users, false, 200, "Usuarios encontrados"
+        );
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<User> findById(String id) {
+    public ApiResponse<List<User>> getActiveUsers() {
+        List<User> users = repository.findByStatus(true);
+        if (users.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No hay usuarios activos"
+            );
+        }
+        return new ApiResponse<>(
+                users, false, 200, "Usuarios activos encontrados"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<List<User>> getInactiveUsers() {
+        List<User> users = repository.findByStatus(false);
+        if (users.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No hay usuarios inactivos"
+            );
+        }
+        return new ApiResponse<>(
+                users, false, 200, "Usuarios inactivos encontrados"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<User> getById(String id) {
         User user = repository.findById(id).orElse(null);
         if (user == null) {
             return new ApiResponse<>(
                     null, true, 400, "El usuario ingresado no existe"
+            );
+        }
+        return new ApiResponse<>(
+                user, false, 200, "Usuario encontrado"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<User> getByEmail(String email) {
+        User user = repository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "El email ingresado no existe"
             );
         }
 
@@ -45,18 +92,21 @@ public class UserService {
                 user, false, 200, "Usuario encontrado"
         );
     }
-
-    @Transactional(readOnly = true)
-    public ApiResponse<User> findByEmailAll(String email) {
-        User user = repository.findByEmail(email).orElse(null);
-        if (user == null) {
+    public ApiResponse<List<User>> getByRole(String roleName) {
+        Role role = roleRepository.findByName(roleName).orElse(null);
+        if (role == null) {
             return new ApiResponse<>(
-                    null, true, 400, "El usuario ingresado no existe"
+                    null, true, 400, "El rol ingresado no existe"
             );
         }
-
+        List<User> users = repository.findByRole(role);
+        if (users.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No se encontraron usuarios con el rol ingresado"
+            );
+        }
         return new ApiResponse<>(
-                user, false, 200, "Usuario encontrado"
+                users, false, 200, "Usuarios encontrados"
         );
     }
 
@@ -136,6 +186,11 @@ public class UserService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public Optional<User> findByEmail(String email) {
+        return repository.findByEmail(email);
+    }
+
     @Transactional(rollbackFor = SQLException.class)
     public ApiResponse<User> update (UpdateUserDto user) {
         User updateUser = repository.findById(user.getId()).orElse(null);
@@ -166,7 +221,7 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = SQLException.class)
-    public ApiResponse<User> changeStatus (String id) {
+    public ApiResponse<User> changeStatus(String id) {
         User user = repository.findById(id).orElse(null);
         if (user == null) {
             return new ApiResponse<>(
@@ -179,34 +234,17 @@ public class UserService {
         );
     }
 
-    public ApiResponse<List<User>> findByRole(String role) {
-        Optional<Role> roleobj= roleRepository.findByName(role);
-        if (roleobj.isEmpty()) {
+    @Transactional(rollbackFor = SQLException.class)
+    public ApiResponse<User> delete(String id) {
+        User user = repository.findById(id).orElse(null);
+        if (user == null) {
             return new ApiResponse<>(
-                    null, true, 400, "El rol ingresado no existe"
+                    null, true, 400, "El usuario ingresado no existe"
             );
         }
-        List<User> users = repository.findByRole(roleobj.get());
-        if (users.isEmpty()) {
-            return new ApiResponse<>(
-                    null, true, 400, "No se encontraron usuarios con el rol ingresado"
-            );
-        }
+        repository.deleteById(id);
         return new ApiResponse<>(
-                users, false, 200, "Usuarios encontrados"
-        );
-    }
-
-    //get usuarios inactivos status=false
-    public ApiResponse<List<User>> getInactiveUsers() {
-        List<User> users = repository.findByStatus(false);
-        if (users.isEmpty()) {
-            return new ApiResponse<>(
-                    null, true, 400, "No se encontraron usuarios inactivos"
-            );
-        }
-        return new ApiResponse<>(
-                users, false, 200, "Usuarios inactivos encontrados"
+                user, false, 200, "Usuario eliminado"
         );
     }
 }

@@ -22,9 +22,9 @@ public class BuildingController {
     private final BuildingService service;
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<BuildingCreatedDto>> create(@Validated @RequestBody BuildingDto building) {
+    public ResponseEntity<ApiResponse<Building>> create(@Validated @RequestBody BuildingDto building) {
         try {
-            ApiResponse<BuildingCreatedDto> response = service.create(building);
+            ApiResponse<Building> response = service.create(building);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
             return new ResponseEntity<>(
                     response,
@@ -42,7 +42,79 @@ public class BuildingController {
     @GetMapping("/getAll")
     public ResponseEntity<ApiResponse<List<Building>>> getAll() {
         try {
-            ApiResponse<List<Building>> response = service.findAll();
+            ApiResponse<List<Building>> response = service.getAll();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping("/getAllActive")
+    public ResponseEntity<ApiResponse<List<Building>>> getAllActive() {
+        try {
+            ApiResponse<List<Building>> response = service.getAllActive();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping("/getAllInactive")
+    public ResponseEntity<ApiResponse<List<Building>>> getAllInactive() {
+        try {
+            ApiResponse<List<Building>> response = service.getAllInactive();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping("/getById/{id}")
+    public ResponseEntity<ApiResponse<Building>> getById(@PathVariable("id") String id) {
+        try {
+            ApiResponse<Building> response = service.getById(id);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping("/getByName/{name}")
+    public ResponseEntity<ApiResponse<Building>> getByName(@PathVariable("name") String name) {
+        try {
+            ApiResponse<Building> response = service.getByName(name);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
             return new ResponseEntity<>(
                     response,
@@ -75,28 +147,10 @@ public class BuildingController {
         }
     }
 
-    @GetMapping("/getById/{id}")
-    public ResponseEntity<ApiResponse<Building>> getById(@PathVariable("id") String id) {
+    @PutMapping("/changeStatus/{id}")
+    public ResponseEntity<ApiResponse<Building>> changeStatus(@PathVariable("id") String id) {
         try {
-            ApiResponse<Building> response = service.findById(id);
-            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
-            return new ResponseEntity<>(
-                    response,
-                    statusCode
-            );
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ApiResponse<>(
-                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
-    @GetMapping("/getByName/{name}")
-    public ResponseEntity<ApiResponse<Building>> getByName(@PathVariable("name") String name) {
-        try {
-            ApiResponse<Building> response = service.findByName(name);
+            ApiResponse<Building> response = service.changeStatus(id);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
             return new ResponseEntity<>(
                     response,
@@ -115,24 +169,6 @@ public class BuildingController {
     public ResponseEntity<ApiResponse<Building>> delete(@PathVariable("id") String id) {
         try {
             ApiResponse<Building> response = service.delete(id);
-            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
-            return new ResponseEntity<>(
-                    response,
-                    statusCode
-            );
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ApiResponse<>(
-                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
-    @PutMapping("/changeStatus/{id}")
-    public ResponseEntity<ApiResponse<Building>> changeStatus(@PathVariable("id") String id) {
-        try {
-            ApiResponse<Building> response = service.changeStatus(id);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
             return new ResponseEntity<>(
                     response,

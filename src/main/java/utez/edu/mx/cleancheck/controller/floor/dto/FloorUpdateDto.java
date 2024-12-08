@@ -7,7 +7,7 @@ import lombok.Data;
 
 public class FloorUpdateDto {
     @NotBlank(message = "El id no puede estar vacio")
-    String id;
+    String floorId;
 
     @NotBlank(message = "El nombre no puede estar vacio")
     String name;

@@ -24,7 +24,7 @@ public class DashboardService {
     @Transactional(readOnly = true)
     public ApiResponse<List<DashboardBuilding>> findAll() {
 
-        List<Building> activeBuilding = buildingRepository.findAllActiveBuildings();
+        List<Building> activeBuilding = buildingRepository.findAllByStatus(true);
         List<DashboardBuilding> dashboardBuildings = new ArrayList<>();
 
         for (Building building : activeBuilding) {
