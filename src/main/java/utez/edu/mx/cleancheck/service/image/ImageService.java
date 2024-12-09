@@ -55,7 +55,7 @@ public class ImageService {
                 s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, decodedBytes.length));
                 String url = s3Presigner.presignGetObject(builder -> builder
                         .getObjectRequest(r -> r.bucket(bucketName).key(key))
-                        .signatureDuration(Duration.ofSeconds(60))
+                        .signatureDuration(Duration.ofDays(1))
                 ).url().toString();
                 int longurl = url.length();
                 System.out.println("longitud de la url: " + longurl);
@@ -75,7 +75,7 @@ public class ImageService {
         try {
             return s3Presigner.presignGetObject(builder -> builder
                             .getObjectRequest(r -> r.bucket(bucketName).key(key))
-                            .signatureDuration(java.time.Duration.ofSeconds(15)))
+                            .signatureDuration(java.time.Duration.ofDays(1)))
                     .url().toString();
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener la URL prefirmada para la key: " + key, e);
