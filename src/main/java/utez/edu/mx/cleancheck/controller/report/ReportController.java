@@ -56,6 +56,8 @@ public class ReportController {
         }
     }
 
+
+
     @GetMapping("/getById/{id}")
     public ResponseEntity<ApiResponse<Report>> getById(@PathVariable String id) {
         try {

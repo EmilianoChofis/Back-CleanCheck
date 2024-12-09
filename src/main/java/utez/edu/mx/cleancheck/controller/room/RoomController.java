@@ -76,6 +76,96 @@ public class RoomController {
         }
     }
 
+    @GetMapping("/getAllOccupied")
+    public ResponseEntity<ApiResponse<List<Room>>> getAllOccupied() {
+        try {
+            ApiResponse<List<Room>> response = service.getAllOccupied();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping("/getAllUnoccupied")
+    public ResponseEntity<ApiResponse<List<Room>>> getAllUnoccupied() {
+        try {
+            ApiResponse<List<Room>> response = service.getAllUnoccupied();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping("/getAllClean")
+    public ResponseEntity<ApiResponse<List<Room>>> getAllClean() {
+        try {
+            ApiResponse<List<Room>> response = service.getAllClean();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping("/getAllChecked")
+    public ResponseEntity<ApiResponse<List<Room>>> getAllChecked() {
+        try {
+            ApiResponse<List<Room>> response = service.getAllChecked();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping("/getAllInMaintenance")
+    public ResponseEntity<ApiResponse<List<Room>>> getAllInMaintenance() {
+        try {
+            ApiResponse<List<Room>> response = service.getAllInMaintenance();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
     @GetMapping("/getById/{roomId}")
     public ResponseEntity<ApiResponse<Room>> getById(@PathVariable("roomId") String roomId) {
         try {
@@ -171,6 +261,96 @@ public class RoomController {
     public ResponseEntity<ApiResponse<Room>> update(@RequestBody RoomUpdateDto room) {
         try {
             ApiResponse<Room> response = service.update(room);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PutMapping("/changeStatusOccupied/{roomId}")
+    public ResponseEntity<ApiResponse<Room>> changeStatusOccupied(@PathVariable("roomId") String roomId) {
+        try {
+            ApiResponse<Room> response = service.changeStatusOccupied(roomId);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PutMapping("/changeStatusUnoccupied/{roomId}")
+    public ResponseEntity<ApiResponse<Room>> changeStatusUnoccupied(@PathVariable("roomId") String roomId) {
+        try {
+            ApiResponse<Room> response = service.changeStatusUnoccupied(roomId);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PutMapping("/changeStatusClean/{roomId}")
+    public ResponseEntity<ApiResponse<Room>> changeStatusClean(@PathVariable("roomId") String roomId) {
+        try {
+            ApiResponse<Room> response = service.changeStatusClean(roomId);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PutMapping("/changeStatusChecked/{roomId}")
+    public ResponseEntity<ApiResponse<Room>> changeStatusChecked(@PathVariable("roomId") String roomId) {
+        try {
+            ApiResponse<Room> response = service.changeStatusChecked(roomId);
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PutMapping("/changeStatusInMaintenance/{roomId}")
+    public ResponseEntity<ApiResponse<Room>> changeStatusInMaintenance(@PathVariable("roomId") String roomId) {
+        try {
+            ApiResponse<Room> response = service.changeStatusInMaintenance(roomId);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
             return new ResponseEntity<>(
                     response,

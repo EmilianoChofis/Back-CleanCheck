@@ -315,6 +315,81 @@ public class RoomService {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<Room> changeStatusOccupied(String id) {
+        Room foundRoom = roomRepository.findById(id).orElse(null);
+        if (foundRoom == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion ingresada no esta registrada"
+            );
+        }
+        foundRoom.setStatus(RoomState.OCCUPIED);
+        Room saveRoom = roomRepository.save(foundRoom);
+        return new ApiResponse<>(
+                saveRoom, false, 200, "Habitacion actualizada correctamente"
+        );
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<Room> changeStatusUnoccupied(String id) {
+        Room foundRoom = roomRepository.findById(id).orElse(null);
+        if (foundRoom == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion ingresada no esta registrada"
+            );
+        }
+        foundRoom.setStatus(RoomState.UNOCCUPIED);
+        Room saveRoom = roomRepository.save(foundRoom);
+        return new ApiResponse<>(
+                saveRoom, false, 200, "Habitacion actualizada correctamente"
+        );
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<Room> changeStatusClean(String id) {
+        Room foundRoom = roomRepository.findById(id).orElse(null);
+        if (foundRoom == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion ingresada no esta registrada"
+            );
+        }
+        foundRoom.setStatus(RoomState.CLEAN);
+        Room saveRoom = roomRepository.save(foundRoom);
+        return new ApiResponse<>(
+                saveRoom, false, 200, "Habitacion actualizada correctamente"
+        );
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<Room> changeStatusChecked(String id) {
+        Room foundRoom = roomRepository.findById(id).orElse(null);
+        if (foundRoom == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion ingresada no esta registrada"
+            );
+        }
+        foundRoom.setStatus(RoomState.CHECKED);
+        Room saveRoom = roomRepository.save(foundRoom);
+        return new ApiResponse<>(
+                saveRoom, false, 200, "Habitacion actualizada correctamente"
+        );
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<Room> changeStatusInMaintenance(String id) {
+        Room foundRoom = roomRepository.findById(id).orElse(null);
+        if (foundRoom == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion ingresada no esta registrada"
+            );
+        }
+        foundRoom.setStatus(RoomState.IN_MAINTENANCE);
+        Room saveRoom = roomRepository.save(foundRoom);
+        return new ApiResponse<>(
+                saveRoom, false, 200, "Habitacion actualizada correctamente"
+        );
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
     public ApiResponse<Room> deleteById(String id) {
         Room foundRoom = roomRepository.findById(id).orElse(null);
         if (foundRoom == null) {
