@@ -3,8 +3,8 @@ package utez.edu.mx.cleancheck.service.room;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import utez.edu.mx.cleancheck.controller.room.dto.RoomCreatedDto;
 import utez.edu.mx.cleancheck.controller.room.dto.RoomDto;
+import utez.edu.mx.cleancheck.controller.room.dto.RoomUpdateDto;
 import utez.edu.mx.cleancheck.model.building.Building;
 import utez.edu.mx.cleancheck.model.building.BuildingRepository;
 import utez.edu.mx.cleancheck.model.floor.Floor;
@@ -17,7 +17,6 @@ import utez.edu.mx.cleancheck.utils.ApiResponse;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,18 +30,22 @@ public class RoomService {
 
     @Transactional(rollbackFor = {SQLException.class})
     public ApiResponse<Room> create(RoomDto room) {
-        Room foundRoom = roomRepository.findByName(room.getName()).orElse(null);
         Floor foundFloor = floorRepository.findById(room.getFloorId()).orElse(null);
         if (foundFloor == null) {
             return new ApiResponse<>(
                     null, true, 400, "El piso ingresado no esta registrado"
             );
-        }else {
-            if (foundRoom != null && foundFloor.equals(foundRoom.getFloor())) {
-                return new ApiResponse<>(
-                        foundRoom, true, 400, "Ya existe una habitacion con ese nombre en el mismo piso"
-                );
-            }
+        }
+        if (roomRepository.existsByNameAndFloorId(room.getName(), room.getFloorId())) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion con el nombre" + room.getName() + " ya esta registrada en el piso"
+            );
+        }
+
+        if (roomRepository.existsByIdentifierAndFloorId(room.getIdentifier(), room.getFloorId())) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion con el identificador " + room.getIdentifier() + " ya esta registrada"
+            );
         }
         Room newRoom = new Room();
         String id = UUID.randomUUID().toString();
@@ -58,196 +61,24 @@ public class RoomService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public ApiResponse<List<Room>> findAll() {
-        List<Room> rooms = roomRepository.findAll();
-        if (rooms.isEmpty()) {
-            return new ApiResponse<>(
-                    null, true, 400, "No hay habitaciones registradas"
-            );
-        }
-        return new ApiResponse<>(
-                rooms, false, 200, "Habitaciones encontradas"
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public ApiResponse<List<Room>> findByFloor(RoomDto dto) {
-        List<Room> rooms = roomRepository.findByFloorId(dto.getFloorId());
-        return new ApiResponse<>(
-                rooms, false, 200, "Habitaciones encontradas"
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public ApiResponse<List<Room>> findByStatus(RoomDto dto) {
-
-        List<Room> rooms;
-
-        if (dto.getStatus() == null) {
-            rooms = roomRepository.findAll();
-        } else {
-
-            boolean isValid = isValidState(dto.getStatus());
-
-            if (!isValid) {
-                return new ApiResponse<>(
-                        null, true, 400, "El estado de la habitacion ingresado no es valido"
-                );
-            }
-
-            rooms = roomRepository.findByStatus(dto.getStatus());
-        }
-
-        return new ApiResponse<>(
-                rooms, false, 200, "Habitaciones encontradas"
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public ApiResponse<Building> findByStatusAndBuilding(RoomDto dto) {
-
-        Optional<Building> optbuilding = buildingRepository.findById(dto.getBuildingId());
-        if (optbuilding.isEmpty()) {
-            return new ApiResponse<>(
-                    null, true, 400, "El edificio ingresado no esta registrado"
-            );
-        }
-
-        //List<Room> rooms;
-        Building building;
-
-        if (dto.getStatus() == null) {
-            //rooms = roomRepository.findByBuildingId(building.get().getId());
-            building = optbuilding.get();
-        } else {
-
-            boolean isValid = isValidState(dto.getStatus());
-
-            if (!isValid) {
-                return new ApiResponse<>(
-                        null, true, 400, "El estado de la habitacion ingresado no es valido"
-                );
-            }
-            building = optbuilding.get();
-
-            //filter building rooms by dto.getStatus()
-            for (Floor floor : building.getFloors()) {
-                floor.getRooms().removeIf(room -> !room.getStatus().equals(dto.getStatus()));
-            }
-            //rooms = roomRepository.findByStatusAndBuilding(dto.getStatus(), optbuilding.get().getId());
-        }
-
-        return new ApiResponse<>(
-                building, false, 200, "Habitaciones encontradas"
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public ApiResponse<Room> findById(String id) {
-        Room foundRoom = roomRepository.findById(id).orElse(null);
-        if (foundRoom == null) {
-            return new ApiResponse<>(
-                    foundRoom, true, 404, "La habitacion ingresada no esta registrada"
-            );
-        }
-        return new ApiResponse<>(
-                foundRoom, false, 200, "Habitacion encontrada"
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public ApiResponse<Room> findByName(String name) {
-        Room foundRoom = roomRepository.findByName(name).orElse(null);
-        if (foundRoom == null) {
-            return new ApiResponse<>(
-                    foundRoom, true, 400, "La habitacion ingresada no esta registrada"
-            );
-        }
-        return new ApiResponse<>(
-                foundRoom, false, 200, "Habitacion encontrada"
-        );
-    }
-
     @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<Room> update(RoomDto room) {
-
-        Room foundRoom = roomRepository.findById(room.getId()).orElse(null);
-        if (foundRoom == null) {
-            return new ApiResponse<>(
-                    foundRoom, true, 400, "La habitacion ingresada no esta registrada"
-            );
-        }
-        Floor foundFloor = floorRepository.findById(room.getFloorId()).orElse(null);
-        if (foundFloor == null) {
-            return new ApiResponse<>(
-                    null, true, 400, "El piso ingresado no esta registrado"
-            );
-        }
-
-        foundRoom.setName(room.getName());
-        foundRoom.setIdentifier(room.getIdentifier());
-        foundRoom.setFloor(foundFloor);
-        Room saveRoom = roomRepository.save(foundRoom);
-        return new ApiResponse<>(
-                saveRoom, false, 200, "Habitacion actualizada correctamente"
-        );
-    }
-
-    @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<Room> delete(RoomDto room) {
-        Room foundRoom = roomRepository.findByIdentifier(room.getIdentifier()).orElse(null);
-        if (foundRoom == null) {
-            return new ApiResponse<>(
-                    foundRoom, true, 400, "La habitacion ingresada no esta registrada"
-            );
-        }
-        roomRepository.delete(foundRoom);
-        return new ApiResponse<>(
-                foundRoom, false, 200, "Habitacion eliminada correctamente"
-        );
-    }
-
-    @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<Room> changeState(RoomDto room) {
-        Room foundRoom = roomRepository.findById(room.getId()).orElse(null);
-        if (foundRoom == null) {
-            return new ApiResponse<>(
-                    foundRoom, true, 400, "La habitacion ingresada no esta registrada"
-            );
-        }
-
-        boolean isValid = false;
-
-        for (RoomState state : RoomState.values()) {
-            if (state.equals(room.getNewStatus())) {
-                isValid = true;
-                break;
-            }
-        }
-
-        if (!isValid) {
-            return new ApiResponse<>(
-                    foundRoom, true, 400, "El estado de la habitacion ingresado no es valido"
-            );
-        }
-
-        foundRoom.setStatus(room.getNewStatus());
-        Room saveRoom = roomRepository.save(foundRoom);
-        return new ApiResponse<>(
-                saveRoom, false, 200, "Estado de la habitacion actualizado correctamente"
-        );
-    }
-
-    @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<List<Room>> createList(RoomDto room) {
-        List<RoomCreatedDto> rooms = room.getRooms();
+    public ApiResponse<List<Room>> createList(List<RoomDto> rooms) {
         List<Room> registeredRooms = new ArrayList<>();
-        for (RoomCreatedDto r : rooms) {
+        for (RoomDto r : rooms) {
             Floor foundFloor = floorRepository.findById(r.getFloorId()).orElse(null);
             if (foundFloor == null) {
                 return new ApiResponse<>(
                         null, true, 400, "El piso ingresado no esta registrado"
+                );
+            }
+            if (roomRepository.existsByNameAndFloorId(r.getName(), r.getFloorId())) {
+                return new ApiResponse<>(
+                        null, true, 400, "La habitacion con el nombre" + r.getName() + " ya esta registrada en el piso"
+                );
+            }
+            if (roomRepository.existsByIdentifierAndFloorId(r.getIdentifier(), r.getFloorId())) {
+                return new ApiResponse<>(
+                        null, true, 400, "La habitacion con el identificador " + r.getIdentifier() + " ya esta registrada"
                 );
             }
             Room newRoom = new Room();
@@ -266,45 +97,249 @@ public class RoomService {
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<List<Room>> findByBuilding(RoomDto dto) {
-        Optional<Building> building = buildingRepository.findById(dto.getBuildingId());
-        if (building.isEmpty()) {
+    public ApiResponse<List<Room>> getAll() {
+        List<Room> rooms = roomRepository.findAll();
+        if (rooms.isEmpty()) {
             return new ApiResponse<>(
-                    null, true, 400, "El edificio ingresado no esta registrado"
+                    null, true, 400, "No hay habitaciones registradas"
             );
         }
-
-        List<Room> rooms = roomRepository.findByBuildingId(dto.getBuildingId());
-
         return new ApiResponse<>(
                 rooms, false, 200, "Habitaciones encontradas"
         );
-
     }
 
-    @Transactional(rollbackFor = {SQLException.class})
-    public ApiResponse<Room> changeRoomStatus(RoomDto dto) {
-        Room foundRoom = roomRepository.findById(dto.getId()).orElse(null);
+    @Transactional(readOnly = true)
+    public ApiResponse<Room> getById(String id) {
+        Room foundRoom = roomRepository.findById(id).orElse(null);
+        if (foundRoom == null) {
+            return new ApiResponse<>(
+                    null, true, 404, "La habitacion ingresada no esta registrada"
+            );
+        }
+        return new ApiResponse<>(
+                foundRoom, false, 200, "Habitacion encontrada"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<Room> getByName(String name) {
+        Room foundRoom = roomRepository.findByName(name).orElse(null);
         if (foundRoom == null) {
             return new ApiResponse<>(
                     null, true, 400, "La habitacion ingresada no esta registrada"
             );
         }
-        foundRoom.setRoomStatus(!foundRoom.getRoomStatus());
-        Room saveRoom = roomRepository.save(foundRoom);
         return new ApiResponse<>(
-                saveRoom, false, 200, "Estado de la habitacion actualizado correctamente"
+                foundRoom, false, 200, "Habitacion encontrada"
         );
     }
 
-    private boolean isValidState(RoomState state) {
-        for (RoomState s : RoomState.values()) {
-            if (s.equals(state)) {
-                return true;
-            }
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Room>> getAllByFloor(String floorId) {
+        Floor floor = floorRepository.findById(floorId).orElse(null);
+        if (floor == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "El piso ingresado no esta registrado"
+            );
         }
-        return false;
+        List<Room> rooms = roomRepository.findByFloorId(floorId);
+        if (rooms.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No hay habitaciones registradas en el piso"
+            );
+        }
+        return new ApiResponse<>(
+                rooms, false, 200, "Habitaciones encontradas"
+        );
     }
 
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Room>> getAllByBuilding(String buildingId) {
+        Building building = buildingRepository.findById(buildingId).orElse(null);
+        if (building == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "El edificio ingresado no esta registrado"
+            );
+        }
+        List<Room> rooms = roomRepository.findByBuildingId(buildingId);
+        if (rooms.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No hay habitaciones registradas en el edificio"
+            );
+        }
+        return new ApiResponse<>(
+                rooms, false, 200, "Habitaciones encontradas"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Room>> getAllOccupied() {
+        List<Room> rooms = roomRepository.findByStatus(RoomState.OCCUPIED);
+        if (rooms.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No hay habitaciones ocupadas"
+            );
+        }
+        return new ApiResponse<>(
+                rooms, false, 200, "Habitaciones encontradas"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Room>> getAllUnoccupied() {
+        List<Room> rooms = roomRepository.findByStatus(RoomState.UNOCCUPIED);
+        if (rooms.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No hay habitaciones desocupadas"
+            );
+        }
+        return new ApiResponse<>(
+                rooms, false, 200, "Habitaciones encontradas"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Room>> getAllClean() {
+        List<Room> rooms = roomRepository.findByStatus(RoomState.CLEAN);
+        if (rooms.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No hay habitaciones limpias"
+            );
+        }
+        return new ApiResponse<>(
+                rooms, false, 200, "Habitaciones encontradas"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Room>> getAllChecked() {
+        List<Room> rooms = roomRepository.findByStatus(RoomState.CHECKED);
+        if (rooms.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No hay habitaciones verificadas"
+            );
+        }
+        return new ApiResponse<>(
+                rooms, false, 200, "Habitaciones encontradas"
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<List<Room>> getAllInMaintenance() {
+        List<Room> rooms = roomRepository.findByStatus(RoomState.IN_MAINTENANCE);
+        if (rooms.isEmpty()) {
+            return new ApiResponse<>(
+                    null, true, 400, "No hay habitaciones en mantenimiento"
+            );
+        }
+        return new ApiResponse<>(
+                rooms, false, 200, "Habitaciones encontradas"
+        );
+    }
+
+//    @Transactional(readOnly = true)
+//    public ApiResponse<Building> findByStatusAndBuilding(RoomDto dto) {
+//
+//        Optional<Building> optbuilding = buildingRepository.findById(dto.getBuildingId());
+//        if (optbuilding.isEmpty()) {
+//            return new ApiResponse<>(
+//                    null, true, 400, "El edificio ingresado no esta registrado"
+//            );
+//        }
+//
+//        //List<Room> rooms;
+//        Building building;
+//
+//        if (dto.getStatus() == null) {
+//            //rooms = roomRepository.findByBuildingId(building.get().getId());
+//            building = optbuilding.get();
+//        } else {
+//
+//            boolean isValid = isValidState(dto.getStatus());
+//
+//            if (!isValid) {
+//                return new ApiResponse<>(
+//                        null, true, 400, "El estado de la habitacion ingresado no es valido"
+//                );
+//            }
+//            building = optbuilding.get();
+//
+//            //filter building rooms by dto.getStatus()
+//            for (Floor floor : building.getFloors()) {
+//                floor.getRooms().removeIf(room -> !room.getStatus().equals(dto.getStatus()));
+//            }
+//            //rooms = roomRepository.findByStatusAndBuilding(dto.getStatus(), optbuilding.get().getId());
+//        }
+//
+//        return new ApiResponse<>(
+//                building, false, 200, "Habitaciones encontradas"
+//        );
+//    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<Room> update(RoomUpdateDto room) {
+
+        Room foundRoom = roomRepository.findById(room.getRoomId()).orElse(null);
+        if (foundRoom == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion ingresada no esta registrada"
+            );
+        }
+        Floor foundFloor = floorRepository.findById(room.getFloorId()).orElse(null);
+        if (foundFloor == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "El piso ingresado no esta registrado"
+            );
+        }
+
+        if (roomRepository.existsByNameAndFloorId(room.getName(), room.getFloorId())) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion con el nombre" + room.getName() + " ya esta registrada en el piso"
+            );
+        }
+
+        if (roomRepository.existsByIdentifierAndFloorId(room.getIdentifier(), room.getFloorId())) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion con el identificador " + room.getIdentifier() + " ya esta registrada"
+            );
+        }
+
+        foundRoom.setName(room.getName());
+        foundRoom.setIdentifier(room.getIdentifier());
+        foundRoom.setFloor(foundFloor);
+        Room saveRoom = roomRepository.save(foundRoom);
+        return new ApiResponse<>(
+                saveRoom, false, 200, "Habitacion actualizada correctamente"
+        );
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<Room> deleteById(String id) {
+        Room foundRoom = roomRepository.findById(id).orElse(null);
+        if (foundRoom == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion ingresada no esta registrada"
+            );
+        }
+        roomRepository.delete(foundRoom);
+        return new ApiResponse<>(
+                foundRoom, false, 200, "Habitacion eliminada correctamente"
+        );
+    }
+
+    @Transactional(rollbackFor = {SQLException.class})
+    public ApiResponse<Room> deleteByIdentifier(String identifier) {
+        Room foundRoom = roomRepository.findByIdentifier(identifier).orElse(null);
+        if (foundRoom == null) {
+            return new ApiResponse<>(
+                    null, true, 400, "La habitacion ingresada no esta registrada"
+            );
+        }
+        roomRepository.delete(foundRoom);
+        return new ApiResponse<>(
+                foundRoom, false, 200, "Habitacion eliminada correctamente"
+        );
+    }
 
 }

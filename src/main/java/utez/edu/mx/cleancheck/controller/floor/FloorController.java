@@ -17,6 +17,7 @@ import java.util.List;
 @RequestMapping("/api-clean/floor")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
+
 public class FloorController {
 
     private final FloorService service;
@@ -40,7 +41,7 @@ public class FloorController {
     }
 
     @PostMapping("/createList")
-    public ResponseEntity<ApiResponse<List<Floor>>> createList(@RequestBody List<FloorDto> floors) {
+    public ResponseEntity<ApiResponse<List<Floor>>> createList(@Validated @RequestBody List<FloorDto> floors) {
         try {
             ApiResponse<List<Floor>> response = service.createList(floors);
             HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;

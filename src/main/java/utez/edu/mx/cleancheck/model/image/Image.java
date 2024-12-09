@@ -19,6 +19,7 @@ public class Image {
     @Id
     private String id;
 
+    @Column(length = 500)
     private String url;
 
     private String key;

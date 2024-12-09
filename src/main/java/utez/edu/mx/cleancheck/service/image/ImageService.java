@@ -13,6 +13,7 @@ import utez.edu.mx.cleancheck.model.report.Report;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -54,8 +55,10 @@ public class ImageService {
                 s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, decodedBytes.length));
                 String url = s3Presigner.presignGetObject(builder -> builder
                         .getObjectRequest(r -> r.bucket(bucketName).key(key))
-                        .signatureDuration(java.time.Duration.ofSeconds(15))
+                        .signatureDuration(Duration.ofSeconds(60))
                 ).url().toString();
+                int longurl = url.length();
+                System.out.println("longitud de la url: " + longurl);
                 Image image = new Image();
                 image.setId(UUID.randomUUID().toString());
                 image.setKey(key);
