@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8082:8080"
+    volumes:
+      - /home/ubuntu/keystore.p12:/src/main/resources/keystore.p12
     environment:
       DB_HOST: ${DB_HOST}
       DB_USERNAME: ${DB_USERNAME}
