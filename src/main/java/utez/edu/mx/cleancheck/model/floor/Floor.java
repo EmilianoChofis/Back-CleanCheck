@@ -1,10 +1,12 @@
 package utez.edu.mx.cleancheck.model.floor;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 import utez.edu.mx.cleancheck.model.building.Building;
 import utez.edu.mx.cleancheck.model.room.Room;
 
@@ -25,17 +27,20 @@ public class Floor {
 
     @ManyToOne
     @JoinColumn(name = "building_id")
+    @JsonIgnoreProperties("floors")
     private Building building;
 
-    @Column(name = "status", columnDefinition = "BOOL DEFAULT TRUE")
+    @ColumnDefault("true")
+    @Column(insertable = false)
     private Boolean status;
 
-    @Column(name = "created_at", insertable = false, columnDefinition = "TIMESTAMP DEFAULT NOW()")
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @JsonIgnoreProperties("floor")
     private List<Room> rooms = new ArrayList<>();
 
 }

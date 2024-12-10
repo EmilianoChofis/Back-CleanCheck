@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import utez.edu.mx.cleancheck.model.user.User;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -32,11 +33,14 @@ public class JwtProvider {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(UserDetails userDetails, User user) {
+        return generateToken(new HashMap<>(), userDetails, user);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, User user) {
+        extraClaims.put("id", user.getId());
+        extraClaims.put("role", user.getRole().getName());
+        extraClaims.put("email", user.getEmail());
         return Jwts
                 .builder()
                 .claims(extraClaims)

@@ -1,15 +1,17 @@
 package utez.edu.mx.cleancheck.model.user;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 import utez.edu.mx.cleancheck.model.record.Record;
 import utez.edu.mx.cleancheck.model.report.Report;
 import utez.edu.mx.cleancheck.model.role.Role;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,28 +27,32 @@ public class User {
 
     private String email;
 
+    @JsonIgnore
     private String password;
 
-    @Column(name = "created_at", insertable = false, columnDefinition = "TIMESTAMP DEFAULT NOW()")
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
-    @Column(columnDefinition = "BOOL DEFAULT TRUE")
+    @Column(insertable = false)
+    @ColumnDefault("true")
     private Boolean status;
 
-    @Column(columnDefinition = "BOOL DEFAULT true")
+    @Column(insertable = false)
+    @ColumnDefault("true")
     private Boolean blocked;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role")
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Record> records;
+    @JsonIgnoreProperties("user")
+    private List<Record> records = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Report> reports;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("user")
+    private List<Report> reports = new ArrayList<>();
 
 }

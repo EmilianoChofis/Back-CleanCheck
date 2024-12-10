@@ -2,12 +2,14 @@ package utez.edu.mx.cleancheck.controller.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 
-public class UserDto {
+public class UpdateUserDto {
+
+    @NotBlank(message = "El id del usuario es requerido")
+    private String id;
 
     @NotBlank(message = "El nombre es requerido")
     private String name;
@@ -16,7 +18,6 @@ public class UserDto {
     @Email(message = "El correo electronico no es valido")
     private String email;
 
-    @NotBlank(message = "La contraseña es requerida")
-    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
-    private String password;
+    @NotBlank(message = "El id del rol es requerido")
+    private String roleId;
 }

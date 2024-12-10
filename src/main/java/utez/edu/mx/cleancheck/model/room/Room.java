@@ -1,7 +1,7 @@
 package utez.edu.mx.cleancheck.model.room;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,14 +31,15 @@ public class Room {
 
     @ManyToOne
     @JoinColumn(name = "floor_id")
+    @JsonIgnoreProperties("rooms")
     private Floor floor;
 
-    @OneToMany(mappedBy = "roomId", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("room")
     private List<Report> reports = new ArrayList<>();
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @JsonIgnoreProperties("room")
     private List<Record> records = new ArrayList<>();
 
     @Column(name = "room_status", columnDefinition = "BOOL DEFAULT TRUE")

@@ -29,6 +29,7 @@ public class InitialConfig implements CommandLineRunner {
         try {
             var receptionistRole = Role.builder()
                     .name(receptionistName)
+                    .description("Recepcionista")
                     .build();
             ApiResponse<Role> receptionistResponse = roleService.createReceptionist(receptionistRole);
             if (receptionistResponse.isError()) {
@@ -40,6 +41,7 @@ public class InitialConfig implements CommandLineRunner {
 
             var maidRole = Role.builder()
                     .name(maidName)
+                    .description("Mucama")
                     .build();
             ApiResponse<Role> maidResponse = roleService.createMaid(maidRole);
             if (maidResponse.isError()) {
@@ -51,6 +53,7 @@ public class InitialConfig implements CommandLineRunner {
 
             var managerRole = Role.builder()
                     .name(managerName)
+                    .description("Gerente")
                     .build();
             ApiResponse<Role> managerResponse = roleService.createManager(managerRole);
             if (managerResponse.isError()) {

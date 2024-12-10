@@ -1,6 +1,6 @@
 package utez.edu.mx.cleancheck.model.report;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,17 +31,19 @@ public class Report {
     @Enumerated(EnumType.STRING)
     private ReportState status;
 
-    @OneToMany(mappedBy = "reportId", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("report")
     private List<Image> images = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User userId;
+    @JsonIgnoreProperties({"reports", "records"})
+    private User user;
 
     @ManyToOne
+    @JsonIgnoreProperties({"reports", "records"})
     @JoinColumn(name = "room_id")
-    private Room roomId;
+    private Room room;
 
 
 
