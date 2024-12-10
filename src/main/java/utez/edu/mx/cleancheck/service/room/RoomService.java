@@ -16,7 +16,6 @@ import utez.edu.mx.cleancheck.utils.ApiResponse;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -105,7 +104,6 @@ public class RoomService {
                     null, true, 400, "No hay habitaciones registradas"
             );
         }
-        rooms.sort(Comparator.comparing(Room::getIdentifier));
         return new ApiResponse<>(
                 rooms, false, 200, "Habitaciones encontradas"
         );
