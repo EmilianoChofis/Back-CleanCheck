@@ -7,9 +7,12 @@ import utez.edu.mx.cleancheck.controller.building.dto.BuildingCreatedDto;
 import utez.edu.mx.cleancheck.controller.building.dto.BuildingDto;
 import utez.edu.mx.cleancheck.model.building.Building;
 import utez.edu.mx.cleancheck.model.building.BuildingRepository;
+import utez.edu.mx.cleancheck.model.floor.Floor;
+import utez.edu.mx.cleancheck.model.room.Room;
 import utez.edu.mx.cleancheck.utils.ApiResponse;
 
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,6 +52,14 @@ public class BuildingService {
             return new ApiResponse<>(
                     null, true, 400, "No hay edificios registrados"
             );
+        }
+        for (Building building : buildings) {
+            for (Floor floor : building.getFloors()) {
+                floor.getRooms().sort(Comparator.comparing(Room::getIdentifier, Comparator.comparingInt(identifier -> {
+                    String number = identifier.replaceAll("\\D", "");
+                    return number.isEmpty() ? 0 : Integer.parseInt(number);
+                })));
+            }
         }
         return new ApiResponse<>(
                 buildings, false, 200, "Edificios encontrados"

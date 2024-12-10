@@ -56,7 +56,59 @@ public class ReportController {
         }
     }
 
+    @GetMapping("/getAllPending")
+    public ResponseEntity<ApiResponse<List<Report>>> getAllPending() {
+        try {
+            ApiResponse<List<Report>> response = service.getAllPending();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 
+    @GetMapping("/getAllInProgress")
+    public ResponseEntity<ApiResponse<List<Report>>> getAllInProgress() {
+        try {
+            ApiResponse<List<Report>> response = service.getAllInProgress();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping("/getAllFinished")
+    public ResponseEntity<ApiResponse<List<Report>>> getAllFinished() {
+        try {
+            ApiResponse<List<Report>> response = service.getAllFinished();
+            HttpStatus statusCode = response.isError() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(
+                    response,
+                    statusCode
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(
+                            null, true, HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 
     @GetMapping("/getById/{id}")
     public ResponseEntity<ApiResponse<Report>> getById(@PathVariable String id) {
