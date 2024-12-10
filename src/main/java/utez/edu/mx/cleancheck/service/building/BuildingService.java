@@ -55,12 +55,17 @@ public class BuildingService {
         }
         for (Building building : buildings) {
             for (Floor floor : building.getFloors()) {
-                floor.getRooms().sort(Comparator.comparing(Room::getIdentifier));
+                floor.getRooms().sort(Comparator.comparing(Room::getIdentifier, Comparator.comparingInt(this::extractNumber)));
             }
         }
         return new ApiResponse<>(
                 buildings, false, 200, "Edificios encontrados"
         );
+    }
+
+    private int extractNumber(String identifier) {
+        String number = identifier.replaceAll("\\D", "");
+        return number.isEmpty() ? 0 : Integer.parseInt(number);
     }
 
     @Transactional(readOnly = true)
