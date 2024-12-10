@@ -207,6 +207,13 @@ public class RoomService {
                     null, true, 400, "No hay habitaciones limpias"
             );
         }
+        rooms.sort((room1, room2) -> {
+            int floorComparison = room1.getFloor().getName().compareToIgnoreCase(room2.getFloor().getName());
+            if (floorComparison != 0) {
+                return floorComparison;
+            }
+            return room1.getName().compareToIgnoreCase(room2.getName());
+        });
         return new ApiResponse<>(
                 rooms, false, 200, "Habitaciones encontradas"
         );
