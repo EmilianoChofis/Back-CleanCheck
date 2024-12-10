@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import utez.edu.mx.cleancheck.model.image.Image;
 import utez.edu.mx.cleancheck.model.room.Room;
@@ -24,8 +25,9 @@ public class Report {
 
     private String description;
 
-    @CreatedDate
-    @Column(name = "created_at", insertable = false, columnDefinition = "TIMESTAMP DEFAULT NOW()")
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
