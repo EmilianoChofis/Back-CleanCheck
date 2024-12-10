@@ -10,6 +10,7 @@ import utez.edu.mx.cleancheck.model.report.ReportRepository;
 import utez.edu.mx.cleancheck.model.report.ReportState;
 import utez.edu.mx.cleancheck.model.room.Room;
 import utez.edu.mx.cleancheck.model.room.RoomRepository;
+import utez.edu.mx.cleancheck.model.room.RoomState;
 import utez.edu.mx.cleancheck.model.user.User;
 import utez.edu.mx.cleancheck.model.user.UserRepository;
 import utez.edu.mx.cleancheck.service.image.ImageService;
@@ -42,21 +43,48 @@ public class ReportService {
                     null, true, 404, "La habitación ingresada no existe"
             );
         }
-        Report newReport = new Report();
-        String newId = UUID.randomUUID().toString();
-        newReport.setId(newId);
-        newReport.setDescription(report.getDescription());
-        newReport.setUser(foundUser);
-        newReport.setRoom(foundRoom);
-        newReport.setStatus(ReportState.PENDING);
-        Report saveReport = reportRepository.save(newReport);
-        List<Image> images = imageService.uploadImages(report.getFiles(), newReport);
-        saveReport.setImages(images);
-        return new ApiResponse<>(
-                saveReport, false, HttpStatus.OK.value(), "Reporte registrado correctamente"
-        );
+        switch (foundRoom.getStatus()) {
+            case CHECKED -> {
+                return new ApiResponse<>(
+                        null, true, 404, "La habitación ingresada ya se encuentra limpia"
+                );
+            }
+            case IN_MAINTENANCE -> {
+                return new ApiResponse<>(
+                        null, true, 404, "La habitación ingresada ya se encuentra en mantenimiento"
+                );
+            }
+            case CLEAN -> {
+                return new ApiResponse<>(
+                        null, true, 404, "La habitación ingresada está en espera de revisión"
+                );
+            }
+            case UNOCCUPIED -> {
+                return new ApiResponse<>(
+                        null, true, 404, "La habitación ingresada no se encuentra ocupada"
+                );
+            }
+            case OCCUPIED -> {
+                foundRoom.setStatus(RoomState.IN_MAINTENANCE);
+                Report newReport = new Report();
+                String newId = UUID.randomUUID().toString();
+                newReport.setId(newId);
+                newReport.setDescription(report.getDescription());
+                newReport.setUser(foundUser);
+                newReport.setRoom(foundRoom);
+                newReport.setStatus(ReportState.PENDING);
+                Report saveReport = reportRepository.save(newReport);
+                List<Image> images = imageService.uploadImages(report.getFiles(), newReport);
+                saveReport.setImages(images);
+                return new ApiResponse<>(
+                        saveReport, false, HttpStatus.OK.value(), "Reporte registrado correctamente"
+                );
+            }
+            default -> {
+                return new ApiResponse<>(null, true, 404, "Estado desconocido");
+            }
+        }
     }
-
 
     public ApiResponse<List<Report>> getAll() {
         List<Report> reports = reportRepository.findAll();
@@ -174,6 +202,16 @@ public class ReportService {
                     null, true, 404, "El reporte no existe"
             );
         }
+        if (report.getStatus() == ReportState.FINISHED) {
+            return new ApiResponse<>(
+                    null, true, 404, "El reporte ya se encuentra finalizado"
+            );
+        }
+        if (report.getStatus() == ReportState.IN_PROGRESS) {
+            return new ApiResponse<>(
+                    null, true, 404, "El reporte ya se encuentra en progreso"
+            );
+        }
         report.setStatus(ReportState.IN_PROGRESS);
         Report updatedReport = reportRepository.save(report);
         return new ApiResponse<>(
@@ -188,10 +226,23 @@ public class ReportService {
                     null, true, 404, "El reporte no existe"
             );
         }
+        if (report.getStatus() == ReportState.FINISHED) {
+            return new ApiResponse<>(
+                    null, true, 404, "El reporte ya se encuentra finalizado"
+            );
+        }
+        if (report.getStatus() != ReportState.IN_PROGRESS) {
+            return new ApiResponse<>(
+                    null, true, 404, "El reporte no esta en progreso"
+            );
+        }
+        Room room = report.getRoom();
+        room.setStatus(RoomState.CHECKED);
+        report.setRoom(room);
         report.setStatus(ReportState.FINISHED);
         Report updatedReport = reportRepository.save(report);
         return new ApiResponse<>(
-                updatedReport, false, HttpStatus.OK.value(), "Reporte actualizado correctamente"
+                updatedReport, false, HttpStatus.OK.value(), "Reporte finalizado correctamente"
         );
     }
 
