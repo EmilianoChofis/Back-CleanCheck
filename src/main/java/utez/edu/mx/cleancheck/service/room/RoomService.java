@@ -249,45 +249,6 @@ public class RoomService {
         );
     }
 
-//    @Transactional(readOnly = true)
-//    public ApiResponse<Building> findByStatusAndBuilding(RoomDto dto) {
-//
-//        Optional<Building> optbuilding = buildingRepository.findById(dto.getBuildingId());
-//        if (optbuilding.isEmpty()) {
-//            return new ApiResponse<>(
-//                    null, true, 400, "El edificio ingresado no esta registrado"
-//            );
-//        }
-//
-//        //List<Room> rooms;
-//        Building building;
-//
-//        if (dto.getStatus() == null) {
-//            //rooms = roomRepository.findByBuildingId(building.get().getId());
-//            building = optbuilding.get();
-//        } else {
-//
-//            boolean isValid = isValidState(dto.getStatus());
-//
-//            if (!isValid) {
-//                return new ApiResponse<>(
-//                        null, true, 400, "El estado de la habitacion ingresado no es valido"
-//                );
-//            }
-//            building = optbuilding.get();
-//
-//            //filter building rooms by dto.getStatus()
-//            for (Floor floor : building.getFloors()) {
-//                floor.getRooms().removeIf(room -> !room.getStatus().equals(dto.getStatus()));
-//            }
-//            //rooms = roomRepository.findByStatusAndBuilding(dto.getStatus(), optbuilding.get().getId());
-//        }
-//
-//        return new ApiResponse<>(
-//                building, false, 200, "Habitaciones encontradas"
-//        );
-//    }
-
     @Transactional(rollbackFor = {SQLException.class})
     public ApiResponse<Room> update(RoomUpdateDto room) {
 
