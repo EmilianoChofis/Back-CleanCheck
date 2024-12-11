@@ -168,6 +168,17 @@ public class RoomService {
                     null, true, 400, "No hay habitaciones registradas en el edificio"
             );
         }
+        rooms.sort((room1, room2) -> {
+            String floorName1 = room1.getFloor().getName().replaceAll("\\D+", "");
+            String floorName2 = room2.getFloor().getName().replaceAll("\\D+", "");
+            int floorComparison = Integer.compare(Integer.parseInt(floorName1), Integer.parseInt(floorName2));
+            if (floorComparison != 0) {
+                return floorComparison;
+            }
+            String roomId1 = room1.getIdentifier().replaceAll("\\D+", "");
+            String roomId2 = room2.getIdentifier().replaceAll("\\D+", "");
+            return Integer.compare(Integer.parseInt(roomId1), Integer.parseInt(roomId2));
+        });
         return new ApiResponse<>(
                 rooms, false, 200, "Habitaciones encontradas"
         );
