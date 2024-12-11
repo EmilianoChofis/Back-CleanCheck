@@ -168,6 +168,17 @@ public class RoomService {
                     null, true, 400, "No hay habitaciones registradas en el edificio"
             );
         }
+        rooms.sort((room1, room2) -> {
+            String floorName1 = room1.getFloor().getName().replaceAll("\\D+", "");
+            String floorName2 = room2.getFloor().getName().replaceAll("\\D+", "");
+            int floorComparison = Integer.compare(Integer.parseInt(floorName1), Integer.parseInt(floorName2));
+            if (floorComparison != 0) {
+                return floorComparison;
+            }
+            String roomId1 = room1.getIdentifier().replaceAll("\\D+", "");
+            String roomId2 = room2.getIdentifier().replaceAll("\\D+", "");
+            return Integer.compare(Integer.parseInt(roomId1), Integer.parseInt(roomId2));
+        });
         return new ApiResponse<>(
                 rooms, false, 200, "Habitaciones encontradas"
         );
@@ -248,45 +259,6 @@ public class RoomService {
                 rooms, false, 200, "Habitaciones encontradas"
         );
     }
-
-//    @Transactional(readOnly = true)
-//    public ApiResponse<Building> findByStatusAndBuilding(RoomDto dto) {
-//
-//        Optional<Building> optbuilding = buildingRepository.findById(dto.getBuildingId());
-//        if (optbuilding.isEmpty()) {
-//            return new ApiResponse<>(
-//                    null, true, 400, "El edificio ingresado no esta registrado"
-//            );
-//        }
-//
-//        //List<Room> rooms;
-//        Building building;
-//
-//        if (dto.getStatus() == null) {
-//            //rooms = roomRepository.findByBuildingId(building.get().getId());
-//            building = optbuilding.get();
-//        } else {
-//
-//            boolean isValid = isValidState(dto.getStatus());
-//
-//            if (!isValid) {
-//                return new ApiResponse<>(
-//                        null, true, 400, "El estado de la habitacion ingresado no es valido"
-//                );
-//            }
-//            building = optbuilding.get();
-//
-//            //filter building rooms by dto.getStatus()
-//            for (Floor floor : building.getFloors()) {
-//                floor.getRooms().removeIf(room -> !room.getStatus().equals(dto.getStatus()));
-//            }
-//            //rooms = roomRepository.findByStatusAndBuilding(dto.getStatus(), optbuilding.get().getId());
-//        }
-//
-//        return new ApiResponse<>(
-//                building, false, 200, "Habitaciones encontradas"
-//        );
-//    }
 
     @Transactional(rollbackFor = {SQLException.class})
     public ApiResponse<Room> update(RoomUpdateDto room) {

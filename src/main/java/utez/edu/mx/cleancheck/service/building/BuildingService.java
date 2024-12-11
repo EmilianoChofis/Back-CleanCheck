@@ -74,6 +74,14 @@ public class BuildingService {
                     null, true, 400, "No hay edificios activos registrados"
             );
         }
+        for (Building building : buildings) {
+            for (Floor floor : building.getFloors()) {
+                floor.getRooms().sort(Comparator.comparing(Room::getIdentifier, Comparator.comparingInt(identifier -> {
+                    String number = identifier.replaceAll("\\D", "");
+                    return number.isEmpty() ? 0 : Integer.parseInt(number);
+                })));
+            }
+        }
         return new ApiResponse<>(
                 buildings, false, 200, "Edificios activos encontrados"
         );
@@ -86,6 +94,14 @@ public class BuildingService {
             return new ApiResponse<>(
                     null, true, 400, "No hay edificios inactivos registrados"
             );
+        }
+        for (Building building : buildings) {
+            for (Floor floor : building.getFloors()) {
+                floor.getRooms().sort(Comparator.comparing(Room::getIdentifier, Comparator.comparingInt(identifier -> {
+                    String number = identifier.replaceAll("\\D", "");
+                    return number.isEmpty() ? 0 : Integer.parseInt(number);
+                })));
+            }
         }
         return new ApiResponse<>(
                 buildings, false, 200, "Edificios inactivos encontrados"
